@@ -1,13 +1,11 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw'; // BOT-BG / Vickyoria
+const BOT_TOKEN = process.env.BOT_TOKEN || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw';
 const KEEPER_WALLET = 'UQBOxLg-Vq86U_y1oJyUFTmvn6tedptaPQ4d3CDUq4O2T_7H';
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
-
-const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
 try {
     const bot = new Telegraf(BOT_TOKEN);
@@ -15,7 +13,8 @@ try {
     bot.start(async (ctx) => {
         const userName = ctx.from.first_name || 'Приятел';
         
-        const fullStoreText = `🔥 **OFFICIAL RED SOFTWARE TEAM | Bot Network Active** 🔥\n\n` +
+        // 1. Текстово съобщение с офертата и информацията
+        const infoText = `🔥 **OFFICIAL RED SOFTWARE TEAM | Bot Network Active** 🔥\n\n` +
             `Здравей, **${userName}**!\n` +
             `⭐ Рекламна Кампания (Бюджет: 3100 Stars в Telegram Ads): Активно промотиране на главния бот @redsoftwarebot!\n\n` +
             `🌐 Безсмъртни сайтове за 50 € & AI Системи\n` +
@@ -23,9 +22,12 @@ try {
             `• Плащаш 50 евро след теста през EasyPay\n` +
             `• Вечен сървър без прекъсване\n\n` +
             `💎 Наличен бюджет в мрежата: 3,100 Stars\n` +
-            `💼 Keeper Wallet (за изплащане в реални пари): \`${KEEPER_WALLET}\``;
+            `💼 Keeper Wallet (за изплащане): \`${KEEPER_WALLET}\``;
 
-        const fullStoreKeyboard = Markup.inlineKeyboard([
+        await ctx.reply(infoText, { parse_mode: 'Markdown' });
+
+        // 2. Отделно, чисто меню с бутоните за плащане и пазаруване, което гарантирано излиза на екрана
+        const storeKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
             [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
             [Markup.button.callback('⭐ 1 000 Stars (16.59 €)', 'buy_1000')],
@@ -40,18 +42,10 @@ try {
             [Markup.button.url('👥 Влез в групата', 'https://t.me/+HTJNMe-pUeEzNmY0')]
         ]);
 
-        try {
-            await ctx.replyWithPhoto(mainCoverImage, {
-                caption: fullStoreText,
-                parse_mode: 'Markdown',
-                ...fullStoreKeyboard
-            });
-        } catch (err) {
-            await ctx.reply(fullStoreText, {
-                parse_mode: 'Markdown',
-                ...fullStoreKeyboard
-            });
-        }
+        await ctx.reply('🛒 **МЕНЮ ЗА ПАЗАРУВАНЕ И ПЛАЩАНЕ С TELEGRAM STARS:**', {
+            parse_mode: 'Markdown',
+            ...storeKeyboard
+        });
     });
 
     const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50050', 'buy_150000'];
@@ -70,7 +64,7 @@ try {
         try {
             await ctx.replyWithInvoice({
                 title: `Пакет ${count} Telegram Stars`,
-                description: `Покупка на ${count} звезди през менюто.`,
+                description: `Покупка на ${count} звезди през менюто за плащане.`,
                 payload: `store_${count}_${Date.now()}`,
                 currency: 'XTR',
                 prices: [{ label: `${count} Stars`, amount: count }]
@@ -98,14 +92,15 @@ try {
         try { await ctx.answerPreCheckoutQuery(true); } catch (e) {}
     });
 
+    bot.on('successful_panel', async (ctx) => {});
     bot.on('successful_payment', async (ctx) => {
         const payment = ctx.message.successful_payment;
         await ctx.reply(`🎉 Успешна покупка на ${payment.total_amount} Stars! Средствата са свързани с Keeper портфейла.`);
     });
 
     bot.launch();
-    console.log("Unified store and ads bot running.");
+    console.log("Bot with separated store menu running.");
 } catch (e) {}
 
-app.get('/', (req, res) => res.json({ status: "UNIFIED BOT ACTIVE" }));
+app.get('/', (req, res) => res.json({ status: "MENU ACTIVE" }));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
