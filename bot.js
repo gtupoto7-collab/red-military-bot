@@ -2,11 +2,11 @@ const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 
 const TOKENS = [
-    process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', // @red_software_bot (Главен)
-    process.env.BOT_TOKEN_2 || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw', // Victoria Vasileva / Източник на звезди
-    process.env.BOT_TOKEN_3 || '9197706596:AAHzaNKwUwhaCGU6B_P-eZ7x2PiVfIoEtCI', // RED_COIN_BOT
-    process.env.BOT_TOKEN_4 || '9094556865:AAFXZcwuMjH_pfyQK9_KTDEOuW5h_wUtWW0', // FULLSTACKRED_BOT
-    process.env.BOT_TOKEN_5 || '9053522895:AAHDuv6qkUGQ7g7gvH88QjMwVR4msnWsnhY'  // Botmaika / MARAUDER
+    process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', 
+    process.env.BOT_TOKEN_2 || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw', 
+    process.env.BOT_TOKEN_3 || '9197706596:AAHzaNKwUwhaCGU6B_P-eZ7x2PiVfIoEtCI', 
+    process.env.BOT_TOKEN_4 || '9094556865:AAFXZcwuMjH_pfyQK9_KTDEOuW5h_wUtWW0', 
+    process.env.BOT_TOKEN_5 || '9053522895:AAHDuv6qkUGQ7g7gvH88QjMwVR4msnWsnhY'  
 ];
 
 const KEEPER_WALLET = 'UQBOxLg-Vq86U_y1oJyUFTmvn6tedptaPQ4d3CDUq4O2T_7H';
@@ -23,20 +23,16 @@ let systemStats = {
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
 const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars & Store** ⭐\n\n` +
-    `Твоят център за покупка, управление и пренасочване на Telegram Stars и услуги!\n\n` +
-    `💎 **Наличен рекламен бюджет:** 3,100 Stars\n` +
-    `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\`\n\n` +
-    `🌐 **Безсмъртни сайтове за 50 € & AI Системи**\n` +
-    `• 7 дни напълно безплатен тест\n` +
-    `• Плащаш 50 евро след теста през **EasyPay**\n\n` +
-    `Избери опция от менюто по-долу:`;
+    `Izberi paket zvezdi za kupuvane ili razgledai platformite:\n\n` +
+    `💎 **Nalichen budzhet:** 3,100 Stars\n` +
+    `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
 
 const starsKeyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⭐ Купи Telegram Stars', 'buy_stars')],
-    [Markup.button.callback('🔄 Синхронизирай / Refund Stars', 'refund_stars')],
-    [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')],
-    [Markup.button.url('👥 Влез в групата', 'https://t.me/+HTJNMe-pUeEzNmY0')],
-    [Markup.button.callback('📊 Системен Статус', 'live_stats')]
+    [Markup.button.callback('⭐ Kupis 100 Stars (1€)', 'buy_100')],
+    [Markup.button.callback('⭐ Kupis 500 Stars (5€)', 'buy_500')],
+    [Markup.button.callback('⭐ Kupis 3100 Stars (31€)', 'buy_3100')],
+    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')],
+    [Markup.button.url('👥 Vlez v grupata', 'https://t.me/+HTJNMe-pUeEzNmY0')]
 ]);
 
 TOKENS.forEach((token, index) => {
@@ -53,41 +49,37 @@ TOKENS.forEach((token, index) => {
             } catch (err) {}
         });
 
-        bot.action('buy_stars', async (ctx) => {
+        // Edinichni buy handlers za paketite
+        bot.action(['buy_100', 'buy_500', 'buy_3100'], async (ctx) => {
             await ctx.answerCbQuery();
-            await ctx.reply(
-                `⭐ **ПОКУПКА НА TELEGRAM STARS**\n\n` +
-                `За да закупиш звезди или да заредиш баланс към твоя профил през официалната мрежа, използвай портфейла:\n\n` +
-                `\`${KEEPER_WALLET}\`\n\n` +
-                `След превод, звездите се автоматично разпределят към рекламните кампании и основните платформи!`,
-                { parse_mode: 'Markdown', ...starsKeyboard }
-            );
-        });
+            const starsCount = ctx.match === 'buy_100' ? 100 : ctx.match === 'buy_500' ? 500 : 3100;
+            const priceEuro = starsCount / 100;
 
-        bot.action('refund_stars', async (ctx) => {
-            await ctx.answerCbQuery();
-            await ctx.reply(
-                `🔄 **ВРЪЩАНЕ И ПРЕНАСОЧВАНЕ НА ЗВЕЗДИ**\n\n` +
-                `Бюджетът от **3,100 Stars** е успешно насочен към кампанията в Telegram Ads за главния бот @red_software_bot. Можеш да управляваш разходите от рекламния панел.`,
-                { parse_mode: 'Markdown', ...starsKeyboard }
-            );
-        });
-
-        bot.action('live_stats', async (ctx) => {
-            await ctx.answerCbQuery();
-            const uptime = Math.floor((new Date() - systemStats.startTime) / 60000);
-            await ctx.reply(
-                `📊 **SYSTEM REPORT (Bot #${index + 1})**\n\n` +
-                `⭐ Активни звезди: ${systemStats.activeStarsBudget} Stars\n` +
-                `⏱️ Uptime: ${uptime} min\n` +
-                `🟢 Статус: Online 24/7`,
-                starsKeyboard
-            );
+            // Izprashtane na Telegram Stars Invoice za plashtane
+            try {
+                await ctx.replyWithInvoice({
+                    title: `Paket ${starsCount} Telegram Stars`,
+                    description: `Zakupuvane na ${starsCount} zvezdi za Oficialnata Red Software Mreza.`,
+                    payload: `stars_${starsCount}_${Date.now()}`,
+                    currency: 'XTR', // Telegram Stars valuta
+                    prices: [{ label: `${starsCount} Stars`, amount: starsCount }]
+                });
+            } catch (invoiceErr) {
+                // Alternativa ako invoice iziskva Provider Token
+                await ctx.reply(
+                    `⭐ **PORTFEIL ZA PLASHTANE (${starsCount} Stars - ${priceEuro}€)**\n\n` +
+                    `Prevedete cyrcata ili plashtaneto kym Keeper Portfeila:\n` +
+                    `\`${KEEPER_WALLET}\`\n\n` +
+                    `Ili platete prez EasyPay / platformite:\n` +
+                    `👉 https://red-software-dashbord.onrender.com`,
+                    { parse_mode: 'Markdown', ...starsKeyboard }
+                );
+            }
         });
 
         bot.launch();
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "STARS & BOTS 24/7 ONLINE", stats: systemStats }));
-app.listen(PORT, () => console.log(`Stars store server running on port ${PORT}`));
+app.get('/', (req, res) => res.json({ status: "STARS STORE ACTIVE", stats: systemStats }));
+app.listen(PORT, () => console.log(`Store server running on port ${PORT}`));
