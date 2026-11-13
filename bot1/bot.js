@@ -8,7 +8,8 @@ const TOKENS = [
     process.env.BOT_TOKEN_2 || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw', 
     process.env.BOT_TOKEN_3 || '9197706596:AAHzaNKwUwhaCGU6B_P-eZ7x2PiVfIoEtCI', 
     process.env.BOT_TOKEN_4 || '9094556865:AAFXZcwuMjH_pfyQK9_KTDEOuW5h_wUtWW0', 
-    process.env.BOT_TOKEN_5 || '9053522895:AAHDuv6qkUGQ7g7gvH88QjMwVR4msnWsnhY'  
+    process.env.BOT_TOKEN_5 || '9053522895:AAHDuv6qkUGQ7g7gvH88QjMwVR4msnWsnhY',
+    process.env.BOT_TOKEN_6 || '' // <--- NOVOTU VKARAN BOT ZA 24/7 GRUPEN SPAM I KANENE
 ];
 
 const KEEPER_WALLET = 'UQBOxLg-Vq86U_y1oJyUFTmvn6tedptaPQ4d3CDUq4O2T_7H';
@@ -41,39 +42,31 @@ async function sendSingleEmail(toEmail, subject, textContent) {
     }
 }
 
-// 🧠 УМЕН ДИСПЕТЧЕР: 10 пратки по 50 имейла (общо 500 на денонощие) за майстори и фирми без сайт
+// 🧠 UMEN GMAIL DISPATCHER: 10 pratri po 50 imejla (obshto do 500 na den)
 async function runSmartEmailCampaign(recipientsList, subject, message) {
-    let batchSize = 50; // по 50 бройки в пакет
+    let batchSize = 50;
     let totalSent = 0;
     
     console.log(`Starting campaign for ${recipientsList.length} recipients (10 batches of 50)...`);
 
     for (let i = 0; i < recipientsList.length; i += batchSize) {
-        if (totalSent >= 500) {
-            console.log("Дневният лимит от 500 имейла е достигнат.");
-            break;
-        }
+        if (totalSent >= 500) break;
 
         const batch = recipientsList.slice(i, i + batchSize);
-        console.log(`Processing batch of ${batch.length} emails...`);
-
         for (const email of batch) {
             if (totalSent >= 500) break;
             await sendSingleEmail(email, subject, message);
             totalSent++;
-            await new Promise(resolve => setTimeout(resolve, 4000)); // пауза между съобщенията
+            await new Promise(resolve => setTimeout(resolve, 4000));
         }
 
-        console.log(`Batch sent. Total sent so far: ${totalSent}. Waiting for next batch interval...`);
-
         if (i + batchSize < recipientsList.length && totalSent < 500) {
-            // Пауза между пакетите (например 2 часа и 24 минути пауза между всяка от 10-те пратки)
             await new Promise(resolve => setTimeout(resolve, 144 * 60 * 1000));
         }
     }
 }
 
-// 1. СТАРТИРАНЕ НА БОТОВЕТЕ С КОНСОЛАТА И ОФЕРТАТА
+// 1. STARTIRANE NA VSICHKI BOTOVE (VKLUCHITELNO NOVIYA ZA 24/7 GRUPEN SPAM I KANENE)
 TOKENS.forEach((token, index) => {
     if (!token || token.length < 20) return;
     
@@ -82,13 +75,13 @@ TOKENS.forEach((token, index) => {
 
         bot.start(async (ctx) => {
             try {
-                const userName = ctx.from.first_name || 'Приятел';
+                const userName = ctx.from.first_name || 'Priyatel';
                 
-                const storeText = `🔥 **OFFICIAL RED SOFTWARE TEAM | България изисква висша класа!** 🔥\n\n` +
-                    `Здравей, **${userName}**!\n` +
-                    `Безсмъртни сайтове за малки фирми и майстори в България за 50 € с 7 дни напълно безплатен тест и плащане през EasyPay!\n\n` +
-                    `⭐ Конзола за реално плащане и пазаруване с Telegram Stars.\n` +
-                    `💎 Наличен бюджет: 3,100 Stars\n` +
+                const storeText = `🔥 **OFFICIAL RED SOFTWARE TEAM | Bulgariya iziskuje vissha klasa!** 🔥\n\n` +
+                    ` Zdravei, **${userName}**!\n` +
+                    `Bezmrutni saitove za malki firmi i maistori v Bulgariya za 50 € s 7 dni napulno bezplaten test i plashtash sled testa prez EasyPay!\n\n` +
+                    `⭐ Konsola za realno plashtane i pazaruvane sys Telegram Stars.\n` +
+                    `💎 Nalichen budzhet: 3,100 Stars\n` +
                     `💼 Keeper Wallet: \`${KEEPER_WALLET}\``;
 
                 const storeKeyboard = Markup.inlineKeyboard([
@@ -99,10 +92,10 @@ TOKENS.forEach((token, index) => {
                     [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
                     [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50050')],
                     [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-                    [Markup.button.url('💳 Купи истински звезди (Магазин)', 'https://t.me/premium')],
-                    [Markup.button.callback('💰 Прехвърли към Keeper (Реални пари)', 'withdraw_keeper')],
-                    [Markup.button.url('🔥 Портфолио & Табло', 'https://red-software-dashbord.onrender.com')],
-                    [Markup.button.url('🌐 Официален Портал', 'https://redsoftwareteam-oficial.onrender.com')]
+                    [Markup.button.url('💳 Kupi istinski zvezdi (Magazin)', 'https://t.me/premium')],
+                    [Markup.button.callback('💰 Prexvorli kam Keeper (Realni pari)', 'withdraw_keeper')],
+                    [Markup.button.url('🔥 Portfolior & Tablo', 'https://red-software-dashbord.onrender.com')],
+                    [Markup.button.url('🌐 Oficialen Portal', 'https://redsoftwareteam-oficial.onrender.com')]
                 ]);
 
                 await ctx.reply(storeText, {
@@ -128,17 +121,17 @@ TOKENS.forEach((token, index) => {
 
                 try {
                     await ctx.replyWithInvoice({
-                        title: `Пакет ${count} Telegram Stars`,
-                        description: `Закупуване на ${count} звезди за мрежата и Keeper портфейла.`,
+                        title: `Paket ${count} Telegram Stars`,
+                        description: `Zakupuvane na ${count} zvezdi za mrezhata i Keeper portfeila.`,
                         payload: `store_${count}_${Date.now()}`,
                         currency: 'XTR',
                         prices: [{ label: `${count} Stars`, amount: count }]
                     });
                 } catch (e) {
                     await ctx.reply(
-                        `⭐ **КОНСОЛА ЗА ПЛАЩАНЕ: ${count} Telegram Stars**\n\n` +
-                        `Балансът в акаунта е нула. За да купиш истински звезди, използвай официалния магазин: https://t.me/premium\n\n` +
-                        `Или превеждай директно към Keeper портфейла:\n\`${KEEPER_WALLET}\``,
+                        `⭐ **KONSOLA ZA PLASHTANE: ${count} Telegram Stars**\n\n` +
+                        `Balansyt v akanta e nula. Za da kupish istinski zvezdi, izpolzvai oficialniya magazin: https://t.me/premium\n\n` +
+                        `Ili prevejdai direktno kam Keeper portfeila:\n\`${KEEPER_WALLET}\``,
                         { parse_mode: 'Markdown' }
                     );
                 }
@@ -147,10 +140,10 @@ TOKENS.forEach((token, index) => {
 
         bot.action('withdraw_keeper', async (ctx) => {
             try {
-                await ctx.answerCbQuery('Сверяване...');
+                await ctx.answerCbQuery('Sveryavane...');
                 await ctx.reply(
-                    `💰 **ПРЕХВЪРЛЯНЕ КЪМ KEEPER ПОРТФЕЙЛ**\n\n` +
-                    `Приходите са свързани с твоя портфейл:\n\`${KEEPER_WALLET}\``,
+                    `💰 **PREXVERLYANE KYM KEEPER PORTFEIL**\n\n` +
+                    `Prichodite sa svurzani s tvoia portfeil:\n\`${KEEPER_WALLET}\``,
                     { parse_mode: 'Markdown' }
                 );
             } catch (e) {}
@@ -163,7 +156,7 @@ TOKENS.forEach((token, index) => {
         bot.on('successful_payment', async (ctx) => {
             try {
                 const payment = ctx.message.successful_payment;
-                await ctx.reply(`🎉 Успешна покупка на ${payment.total_amount} Telegram Stars! Средствата са свързани с Keeper портфейла.`);
+                await ctx.reply(`🎉 Uspeshna pokupka na ${payment.total_amount} Telegram Stars! Sredstvata sa svurzani s Keeper portfeila.`);
             } catch (e) {}
         });
 
@@ -174,23 +167,22 @@ TOKENS.forEach((token, index) => {
     } catch (e) {}
 });
 
-// 2. API ЗА СТАРТИРАНЕ НА ИМЕЙЛ КАМПАНИЯ (10 ПРАТКИ ПО 50 = 500)
+// 2. API ZA STARTIRANE NA IMЕЙЛ КАМПАНИЯ (10 pratri po 50 = 500)
 app.post('/api/start-campaign', async (req, res) => {
     const { recipients, subject, message } = req.body;
     if (!recipients || !Array.isArray(recipients) || !message) {
         return res.status(400).json({ error: "Missing 'recipients' array or 'message'." });
     }
     res.json({ status: "CAMPAIGN STARTED", totalRecipients: recipients.length, note: "Smart queue running: 10 batches of 50 emails up to 500 daily limit." });
-    runSmartEmailCampaign(recipients, subject || "🌐 Безсмъртен сайт за вашата дейност с 7 дни безплатен тест | RED SOFTWARE TEAM", message);
+    runSmartEmailCampaign(recipients, subject || "🌐 Bezsmurten sait za vashata deinost s 7 dni bezplaten test | RED SOFTWARE TEAM", message);
 });
 
-// 3. EXPRESS СЪРВЪР С КЕЕП-АЛИЙВ ПИНГ ЗА 24/7 АКТИВНОСТ
-app.get('/', (req, res) => res.json({ status: "FULL 24/7 NETWORK, STARS CONSOLE & 10x50 GMAIL DISPATCHER ONLINE", keeperWallet: KEEPER_WALLET }));
+// 3. EXPRESS SURVAR S KEEP-ALIVE PING ZA 24/7 AKTIVNOST
+app.get('/', (req, res) => res.json({ status: "FULL 24/7 NETWORK, 6 BOTS, STARS CONSOLE & GMAIL DISPATCHER ONLINE", keeperWallet: KEEPER_WALLET }));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     
-    // Самопинг на всеки 4 минути за 24/7 режим в облака
     setInterval(() => {
         const appUrl = process.env.RENDER_EXTERNAL_URL || process.env.RAILWAY_STATIC_URL;
         if (appUrl) {
