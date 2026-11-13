@@ -1,7 +1,6 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 
-// Токените на всички ботове в мрежата на OFFICIAL RED SOFTWARE TEAM
 const TOKENS = [
     process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', 
     process.env.BOT_TOKEN_2 || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw', 
@@ -16,7 +15,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 TOKENS.forEach((token, index) => {
-    if (!token) return;
+    if (!token || token.length < 20) return;
+    
     try {
         const bot = new Telegraf(token);
 
@@ -46,9 +46,7 @@ TOKENS.forEach((token, index) => {
                     parse_mode: 'Markdown',
                     ...storeKeyboard
                 });
-            } catch (err) {
-                console.error(`Error in bot #${index + 1} start:`, err);
-            }
+            } catch (err) {}
         });
 
         const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50050', 'buy_150000'];
@@ -106,12 +104,16 @@ TOKENS.forEach((token, index) => {
             } catch (e) {}
         });
 
-        bot.launch();
-        console.log(`Bot #${index + 1} launched successfully.`);
+        bot.launch().then(() => {
+            console.log(`Bot #${index + 1} launched successfully.`);
+        }).catch(err => {
+            console.error(`Bot #${index + 1} launch failed:`, err.message);
+        });
+
     } catch (e) {
-        console.error(`Failed to launch bot #${index + 1}:`, e);
+        console.error(`Error setting up bot #${index + 1}:`, e.message);
     }
 });
 
-app.get('/', (req, res) => res.json({ status: "ALL TOKENS STARS STORE ACTIVE" }));
+app.get('/', (req, res) => res.json({ status: "BOTS ONLINE & STORE ACTIVE" }));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
