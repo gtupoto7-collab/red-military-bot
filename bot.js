@@ -23,20 +23,20 @@ let systemStats = {
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
 const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
-    `Избери пакет звезди от менюто по-долу:\n\n` +
-    `💎 **Наличен бюджет:** 3,100 Stars\n` +
+    `Izberi paket za istinsko plashtane:\n\n` +
+    `💎 **Nalichen budzhet:** 3,100 Stars\n` +
     `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
 
+// Pravim 250 Stars da otvarya direktno native Telegram Stars link / bot invoice app
 const starsKeyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
+    [Markup.button.url('⭐ 250 Stars (Istinsko plashtane)', 'https://t.me/tme/reklamabot?start=invoice_250')],
     [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
     [Markup.button.callback('⭐ 1 000 Stars (16.59 €)', 'buy_1000')],
     [Markup.button.callback('⭐ 2 500 Stars (40.99 €)', 'buy_2500')],
     [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
     [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50000')],
     [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-    [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')],
-    [Markup.button.url('👥 Влез в групата', 'https://t.me/+HTJNMe-pUeEzNmY0')]
+    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
 ]);
 
 TOKENS.forEach((token, index) => {
@@ -53,14 +53,13 @@ TOKENS.forEach((token, index) => {
             } catch (err) {}
         });
 
-        const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50000', 'buy_150000'];
+        const packageActions = ['buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50000', 'buy_150000'];
 
         bot.action(packageActions, async (ctx) => {
             await ctx.answerCbQuery();
             const action = ctx.match;
-            let count = 250;
-            let price = '4.29 €';
-            if (action === 'buy_500') { count = 500; price = '8.39 €'; }
+            let count = 500;
+            let price = '8.39 €';
             if (action === 'buy_1000') { count = 1000; price = '16.59 €'; }
             if (action === 'buy_2500') { count = 2500; price = '40.99 €'; }
             if (action === 'buy_10000') { count = 10000; price = '164.99 €'; }
@@ -68,12 +67,10 @@ TOKENS.forEach((token, index) => {
             if (action === 'buy_150000') { count = 150000; price = '2 459.00 €'; }
 
             await ctx.reply(
-                `⭐ **ПАКЕТ: ${count} Telegram Stars (${price})**\n\n` +
-                `За да финализираш покупката и да заредиш баланса си, моля преведи сумата към официалния Keeper портфейл:\n\n` +
+                `⭐ **PAKET: ${count} Telegram Stars (${price})**\n\n` +
+                `Prevedi sumata kam Keeper portfeila:\n` +
                 `\`${KEEPER_WALLET}\`\n\n` +
-                `След успешен превод, звездите се активират автоматично в мрежата.\n` +
-                `Можеш да разгледаш и платформите ни:\n` +
-                `👉 https://red-software-dashbord.onrender.com`,
+                `Ili izpolzvai 250 Stars opciyata ot menüto za direktno plashtane!`,
                 { parse_mode: 'Markdown', ...starsKeyboard }
             );
         });
@@ -82,5 +79,5 @@ TOKENS.forEach((token, index) => {
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "STORE ACTIVE WITHOUT INVOICE ERRORS", stats: systemStats }));
+app.get('/', (req, res) => res.json({ status: "REAL STARS LINK ACTIVE", stats: systemStats }));
 app.listen(PORT, () => console.log(`Store server running on port ${PORT}`));
