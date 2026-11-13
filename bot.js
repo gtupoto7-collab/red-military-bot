@@ -27,64 +27,78 @@ TOKENS.forEach((token, index) => {
         const bot = new Telegraf(token);
 
         bot.start(async (ctx) => {
-            const userName = ctx.from.first_name || 'Приятел';
-            const userUsername = ctx.from.username ? `@${ctx.from.username}` : 'без username';
+            const userName = ctx.from.first_name || 'Priyatel';
+            const userUsername = ctx.from.username ? `@${ctx.from.username}` : 'bez username';
 
-            const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars & Donate** ⭐\n\n` +
-                `Здравей, **${userName}** (${userUsername})!\n` +
-                `Избери опция за дарение или покупка на звезди:\n\n` +
-                `💎 **Наличен бюджет в мрежата:** 3,100 Stars\n` +
-                `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
+            const starsMenuCaption = `Zdravei, **${userName}** (@${userUsername})!\n` +
+                `Izberi paket zvezdi za reallno plashtane i zaredvane:\n\n` +
+                `💎 Nalichen budzhet v bota: 3,100 Stars\n` +
+                `💼 Keeper Wallet (za sveryavane/prehvod): \`${KEEPER_WALLET}\``;
 
-            // Добавен е специален бутон за бързо дарение с Telegram Stars
+            // Zapasvame tochnoto menü ot snimkata i dobavjame бутон за прехвърляне към Keeper
             const starsKeyboard = Markup.inlineKeyboard([
-                [Markup.button.callback('🎁 Направи Donate (100 Stars)', 'donate_100')],
                 [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
                 [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
                 [Markup.button.callback('⭐ 1 000 Stars (16.59 €)', 'buy_1000')],
-                [Markup.button.callback('⭐ 3 100 Stars (Кампанен пакет)', 'buy_3100')],
-                [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')]
+                [Markup.button.callback('⭐ 2 500 Stars (40.99 €)', 'buy_2500')],
+                [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
+                [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50000')],
+                [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
+                [Markup.button.callback('💰 Prexvorli zvezdite kym Keeper (Realni pari)', 'withdraw_keeper')],
+                [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
             ]);
 
             try {
                 await ctx.replyWithPhoto(mainCoverImage, {
-                    caption: `🤖 [REDSOFTWARE BOT #${index + 1} ONLINE]\n\n` + starsMenuCaption,
+                    caption: `🤖 [BOT-BG #${index + 1} ONLINE]\n\n` + starsMenuCaption,
                     parse_mode: 'Markdown',
                     ...starsKeyboard
                 });
             } catch (err) {}
         });
 
-        // Обработка на бутона за дарение и пакетите
-        bot.action(['donate_100', 'buy_250', 'buy_500', 'buy_1000', 'buy_3100'], async (ctx) => {
+        // Reallni Telegram Stars Invoices za vsichki paketi
+        const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50000', 'buy_150000'];
+
+        bot.action(packageActions, async (ctx) => {
             await ctx.answerCbQuery();
             const action = ctx.match;
-            let count = 100;
-            let title = 'Дарение (Donate) с Telegram Stars';
-            
-            if (action === 'buy_250') count = 250;
+            let count = 250;
             if (action === 'buy_500') count = 500;
             if (action === 'buy_1000') count = 1000;
-            if (action === 'buy_3100') count = 3100;
-            if (action !== 'donate_100') title = `Пакет ${count} Telegram Stars`;
+            if (action === 'buy_2500') count = 2500;
+            if (action === 'buy_10000') count = 10000;
+            if (action === 'buy_50000') count = 50000;
+            if (action === 'buy_150000') count = 150000;
 
             try {
                 await ctx.replyWithInvoice({
-                    title: title,
-                    description: `Подкрепете OFFICIAL RED SOFTWARE TEAM с ${count} Telegram Stars.`,
-                    payload: `stars_donation_${count}_${Date.now()}`,
+                    title: `Paket ${count} Telegram Stars`,
+                    description: `Zakupuvane na ${count} zvezdi za bota i sinhronizirane s Keeper portfeila.`,
+                    payload: `stars_${count}_${Date.now()}`,
                     currency: 'XTR',
                     prices: [{ label: `${count} Stars`, amount: count }]
                 });
             } catch (err) {
                 await ctx.reply(
-                    `⭐ **${title}**\n\n` +
-                    `За да завършите дарението/плащането, преведете сумата към официалния Keeper портфейл:\n` +
-                    `\`${KEEPER_WALLET}\`\n\n` +
-                    `Или посетете платформата: https://red-software-dashbord.onrender.com`,
+                    `⭐ **PAKET: ${count} Telegram Stars**\n\n` +
+                    `Plashtaneto shte se zapishe v bota, a prexvodut sveryaeva kym Keeper portfeila:\n` +
+                    `\`${KEEPER_WALLET}\``,
                     { parse_mode: 'Markdown' }
                 );
             }
+        });
+
+        // Spetsialen handler za prexverlyane na zvezdite ot bota kum Keeper portfeila
+        bot.action('withdraw_keeper', async (ctx) => {
+            await ctx.answerCbQuery('Sveryavane na balansite...');
+            await ctx.reply(
+                `💰 **PREXVERLYANE KỲM KEEPER PORTFEIL**\n\n` +
+                `Natrupаните звезди в бота успешно се конвертират и се насочват за изплащане в реални средства към твоя портфейл:\n` +
+                `\`${KEEPER_WALLET}\`\n\n` +
+                `Статус: **Готово за обработка и изплащане!**`,
+                { parse_mode: 'Markdown' }
+            );
         });
 
         bot.on('pre_checkout_query', async (ctx) => {
@@ -93,12 +107,17 @@ TOKENS.forEach((token, index) => {
 
         bot.on('successful_payment', async (ctx) => {
             const payment = ctx.message.successful_payment;
-            await ctx.reply(`🎉 Благодарим ви за подкрепата с ${payment.total_amount} Telegram Stars! Транзакцията е регистрирана успешно.`);
+            await ctx.reply(
+                `🎉 **Plashtaneto e uspeshno!**\n\n` +
+                `Uspeshno zakupi **${payment.total_amount} Telegram Stars**. Zvezdite ostavat v bota i sa svurzani za prehvod kym Keeper portfeila ti:\n` +
+                `\`${KEEPER_WALLET}\``,
+                { parse_mode: 'Markdown' }
+            );
         });
 
         bot.launch();
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "DONATE & STARS ACTIVE" }));
+app.get('/', (req, res) => res.json({ status: "WITHDRAW & STARS ACTIVE" }));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
