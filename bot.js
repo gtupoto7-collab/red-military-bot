@@ -1,7 +1,7 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw'; // @Vickyoria_a_bot
+const BOT_TOKEN = process.env.BOT_TOKEN || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw'; // BOT-BG / Vickyoria
 const KEEPER_WALLET = 'UQBOxLg-Vq86U_y1oJyUFTmvn6tedptaPQ4d3CDUq4O2T_7H';
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,15 +13,19 @@ try {
     const bot = new Telegraf(BOT_TOKEN);
 
     bot.start(async (ctx) => {
-        const userName = ctx.from.first_name || 'Priyatel';
+        const userName = ctx.from.first_name || 'Приятел';
         
-        const storeCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store & Payment** ⭐\n\n` +
-            `Zdravei, **${userName}**!\n` +
-            `Izberi nachin na plashtane sys Telegram Stars ili zaredi ot oficialniya magazin:\n\n` +
-            `💎 Nalichen budzhet: 3,100 Stars\n` +
-            `💼 Keeper Wallet: \`${KEEPER_WALLET}\``;
+        const fullStoreText = `🔥 **OFFICIAL RED SOFTWARE TEAM | Bot Network Active** 🔥\n\n` +
+            `Здравей, **${userName}**!\n` +
+            `⭐ Рекламна Кампания (Бюджет: 3100 Stars в Telegram Ads): Активно промотиране на главния бот @redsoftwarebot!\n\n` +
+            `🌐 Безсмъртни сайтове за 50 € & AI Системи\n` +
+            `• 7 дни напълно безплатен тест\n` +
+            `• Плащаш 50 евро след теста през EasyPay\n` +
+            `• Вечен сървър без прекъсване\n\n` +
+            `💎 Наличен бюджет в мрежата: 3,100 Stars\n` +
+            `💼 Keeper Wallet (за изплащане в реални пари): \`${KEEPER_WALLET}\``;
 
-        const storeKeyboard = Markup.inlineKeyboard([
+        const fullStoreKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
             [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
             [Markup.button.callback('⭐ 1 000 Stars (16.59 €)', 'buy_1000')],
@@ -29,21 +33,23 @@ try {
             [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
             [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50050')],
             [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-            [Markup.button.url('💳 Zaredi istinski zvezdi (Magazin)', 'https://t.me/premium')],
-            [Markup.button.callback('💰 Prexvorli kam Keeper (Realni pari)', 'withdraw_keeper')],
-            [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
+            [Markup.button.url('💳 Зареди истински звезди (Магазин)', 'https://t.me/premium')],
+            [Markup.button.callback('💰 Прехвърли към Keeper (Реални пари)', 'withdraw_keeper')],
+            [Markup.button.url('🔥 Разгледай Платформата 1', 'https://red-software-dashbord.onrender.com')],
+            [Markup.button.url('🌐 Разгледай Платформата 2', 'https://redsoftwareteam-oficial.onrender.com')],
+            [Markup.button.url('👥 Влез в групата', 'https://t.me/+HTJNMe-pUeEzNmY0')]
         ]);
 
         try {
             await ctx.replyWithPhoto(mainCoverImage, {
-                caption: storeCaption,
+                caption: fullStoreText,
                 parse_mode: 'Markdown',
-                ...storeKeyboard
+                ...fullStoreKeyboard
             });
         } catch (err) {
-            await ctx.reply(storeCaption, {
+            await ctx.reply(fullStoreText, {
                 parse_mode: 'Markdown',
-                ...storeKeyboard
+                ...fullStoreKeyboard
             });
         }
     });
@@ -63,27 +69,27 @@ try {
 
         try {
             await ctx.replyWithInvoice({
-                title: `Paket ${count} Telegram Stars`,
-                description: `Nachin na plashtane i zakupyavane na ${count} zvezdi.`,
+                title: `Пакет ${count} Telegram Stars`,
+                description: `Покупка на ${count} звезди през менюто.`,
                 payload: `store_${count}_${Date.now()}`,
                 currency: 'XTR',
                 prices: [{ label: `${count} Stars`, amount: count }]
             });
         } catch (e) {
             await ctx.reply(
-                `⭐ **NACHIN NA PLASHTANE: ${count} Telegram Stars**\n\n` +
-                `Tvoyat balans v aкауnta e 0. Za da izpolzvash tozi nachin na plashtane, zaredi zvezdi ot oficialniya magazin: https://t.me/premium\n\n` +
-                `Ili prevejdai direktno kam Keeper portfeila:\n\`${KEEPER_WALLET}\``,
+                `⭐ **ПАКЕТ: ${count} Telegram Stars**\n\n` +
+                `Балансът е 0. Закупи истински звезди от официалния магазин: https://t.me/premium\n\n` +
+                `Или преведи сумата към Keeper портфейла ти:\n\`${KEEPER_WALLET}\``,
                 { parse_mode: 'Markdown' }
             );
         }
     });
 
     bot.action('withdraw_keeper', async (ctx) => {
-        await ctx.answerCbQuery('Sveryavane...');
+        await ctx.answerCbQuery('Сверяване...');
         await ctx.reply(
-            `💰 **PREXVERLYANE KYM KEEPER PORTFEIL**\n\n` +
-            `Plashtaniyata sa svurzani s tvoia portfeil:\n\`${KEEPER_WALLET}\``,
+            `💰 **ПРЕХВЪРЛЯНЕ КЪМ KEEPER ПОРТФЕЙЛ**\n\n` +
+            `Приходите са насочени към портфейла ти:\n\`${KEEPER_WALLET}\``,
             { parse_mode: 'Markdown' }
         );
     });
@@ -94,12 +100,12 @@ try {
 
     bot.on('successful_payment', async (ctx) => {
         const payment = ctx.message.successful_payment;
-        await ctx.reply(`🎉 Uspeshno plashtane s ${payment.total_amount} Telegram Stars! Sredstvata sa svurzani s Keeper portfeila.`);
+        await ctx.reply(`🎉 Успешна покупка на ${payment.total_amount} Stars! Средствата са свързани с Keeper портфейла.`);
     });
 
     bot.launch();
-    console.log("Payment store bot running with direct methods.");
+    console.log("Unified store and ads bot running.");
 } catch (e) {}
 
-app.get('/', (req, res) => res.json({ status: "PAYMENT METHOD ACTIVE" }));
+app.get('/', (req, res) => res.json({ status: "UNIFIED BOT ACTIVE" }));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
