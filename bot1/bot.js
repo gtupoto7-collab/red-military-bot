@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
-// GMAIL SMTP CONFIGURATION (До 500 имейла на денонощие)
+// GMAIL SMTP CONFIGURATION (До 500 имейла на денонощие за безплатни пощи)
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -41,29 +41,35 @@ async function sendSingleEmail(toEmail, subject, textContent) {
     }
 }
 
-// Умен диспетчер за по 30 имейла в пакет (до 500 на ден)
+// Умен диспетчер: изпраща по 30 имейла в пакет с интервал, до достигане на 500 дневен лимит
 async function runSmartEmailCampaign(recipientsList, subject, message) {
     let batchSize = 30;
     let totalSent = 0;
     
+    console.log(`Starting smart campaign for ${recipientsList.length} recipients...`);
+
     for (let i = 0; i < recipientsList.length; i += batchSize) {
-        if (totalSent >= 500) break;
+        if (totalSent >= 500) {
+            console.log("Днелният лимит от 500 имейла е достигнат.");
+            break;
+        }
 
         const batch = recipientsList.slice(i, i + batchSize);
         for (const email of batch) {
             if (totalSent >= 500) break;
             await sendSingleEmail(email, subject, message);
             totalSent++;
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 3000)); // пауза между имейлите
         }
 
         if (i + batchSize < recipientsList.length && totalSent < 500) {
+            // Пауза между пакетите
             await new Promise(resolve => setTimeout(resolve, 90 * 60 * 1000));
         }
     }
 }
 
-// 1. СТАРТИРАНЕ НА БОТОВЕТЕ С КОНСОЛАТА И ОФЕРТАТА
+// 1. СТАРТИРАНЕ НА БОТОВЕТЕ С КОНСОЛАТА И ОФЕРТАТА ЗА БЪЛГАРИЯ
 TOKENS.forEach((token, index) => {
     if (!token || token.length < 20) return;
     
@@ -168,21 +174,23 @@ TOKENS.forEach((token, index) => {
     } catch (e) {}
 });
 
-// 2. API ЗА СТАРТИРАНЕ НА ИМЕЙЛ КАМПАНИЯ
+// 2. API ЗА СТАРТИРАНЕ НА ИМЕЙЛ КАМПАНИЯ НА ПАКЕТИ ПО 30 (ДО 500/ДЕН)
 app.post('/api/start-campaign', async (req, res) => {
     const { recipients, subject, message } = req.body;
     if (!recipients || !Array.isArray(recipients) || !message) {
         return res.status(400).json({ error: "Missing 'recipients' array or 'message'." });
     }
-    res.json({ status: "CAMPAIGN STARTED", totalRecipients: recipients.length });
+    res.json({ status: "CAMPAIGN STARTED", totalRecipients: recipients.length, note: "Smart queue running: 30 emails per batch up to 500 daily limit." });
     runSmartEmailCampaign(recipients, subject || "OFFICIAL RED SOFTWARE TEAM", message);
 });
 
-// 3. EXPRESS СЪРВЪР С KEEP-ALIVE ПИНГ ЗА 24/7 АКТИВНОСТ
-app.get('/', (req, res) => res.json({ status: "FULL 24/7 NETWORK, STARS CONSOLE & GMAIL DISPATCHER ONLINE", keeperWallet: KEEPER_WALLET }));
+// 3. EXPRESS СЪРВЪР С КЕЕП-АЛИЙВ ПИНГ ЗА 24/7 АКТИВНОСТ
+app.get('/', (req, res) => res.json({ status: "FULL 24/7 NETWORK, STARS CONSOLE & SMART GMAIL DISPATCHER ONLINE", keeperWallet: KEEPER_WALLET }));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    
+    // Самопинг на всеки 4 минути за поддържане на 24/7 активност в облака
     setInterval(() => {
         const appUrl = process.env.RENDER_EXTERNAL_URL || process.env.RAILWAY_STATIC_URL;
         if (appUrl) {
