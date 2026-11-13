@@ -1,5 +1,6 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
+const https = require('https');
 
 const TOKENS = [
     process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', 
@@ -14,6 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
+// 1. Стартиране на всички ботове с пълното меню за плащане и конзола
 TOKENS.forEach((token, index) => {
     if (!token || token.length < 20) return;
     
@@ -22,13 +24,13 @@ TOKENS.forEach((token, index) => {
 
         bot.start(async (ctx) => {
             try {
-                const userName = ctx.from.first_name || 'Priyatel';
+                const userName = ctx.from.first_name || 'Приятел';
                 
-                const storeText = `⭐ **OFFICIAL RED SOFTWARE TEAM | Full Stars Store & Network** ⭐\n\n` +
-                    `Zdravei, **${userName}**!\n` +
-                    `Izberi paket zvezdi za reallno plashtane i zaredvane. Ako nqmash nalichni zvezdi, kupi ot oficialniya magazin:\n\n` +
-                    `💎 Nalichen budzhet: 3,100 Stars\n` +
-                    `💼 Keeper Wallet (za izplashtane): \`${KEEPER_WALLET}\``;
+                const storeText = `⭐ **OFFICIAL RED SOFTWARE TEAM | 24/7 Stars Store & Network** ⭐\n\n` +
+                    `Здравей, **${userName}**!\n` +
+                    `Активна е конзолата за реално плащане и пазаруване с Telegram Stars.\n\n` +
+                    `💎 Наличен бюджет: 3,100 Stars\n` +
+                    `💼 Keeper Wallet (за изплащане): \`${KEEPER_WALLET}\``;
 
                 const storeKeyboard = Markup.inlineKeyboard([
                     [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
@@ -38,9 +40,9 @@ TOKENS.forEach((token, index) => {
                     [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
                     [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50050')],
                     [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-                    [Markup.button.url('💳 Kupi istinski zvezdi (Magazin)', 'https://t.me/premium')],
-                    [Markup.button.callback('💰 Prexvorli kam Keeper (Realni pari)', 'withdraw_keeper')],
-                    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
+                    [Markup.button.url('💳 Купи истински звезди (Магазин)', 'https://t.me/premium')],
+                    [Markup.button.callback('💰 Прехвърли към Keeper (Реални пари)', 'withdraw_keeper')],
+                    [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')]
                 ]);
 
                 await ctx.reply(storeText, {
@@ -66,17 +68,17 @@ TOKENS.forEach((token, index) => {
 
                 try {
                     await ctx.replyWithInvoice({
-                        title: `Paket ${count} Telegram Stars`,
-                        description: `Zakupuvane na ${count} zvezdi za mrezhata i Keeper portfeila.`,
+                        title: `Пакет ${count} Telegram Stars`,
+                        description: `Закупуване на ${count} звезди за мрежата и Keeper портфейла.`,
                         payload: `store_${count}_${Date.now()}`,
                         currency: 'XTR',
                         prices: [{ label: `${count} Stars`, amount: count }]
                     });
                 } catch (e) {
                     await ctx.reply(
-                        `⭐ **PAKET: ${count} Telegram Stars**\n\n` +
-                        `Balansyt v aкауnta e nula. Za da kupish istinski zvezdi, izpolzvai oficialniya magazin: https://t.me/premium\n\n` +
-                        `Ili prevejdai direktno kam Keeper portfeila:\n\`${KEEPER_WALLET}\``,
+                        `⭐ **КОНСОЛА ЗА ПЛАЩАНЕ: ${count} Telegram Stars**\n\n` +
+                        `Балансът в акаунта е нула. За да купиш истински звезди, използвай официалния магазин: https://t.me/premium\n\n` +
+                        `Или превеждай директно към Keeper портфейла:\n\`${KEEPER_WALLET}\``,
                         { parse_mode: 'Markdown' }
                     );
                 }
@@ -85,10 +87,10 @@ TOKENS.forEach((token, index) => {
 
         bot.action('withdraw_keeper', async (ctx) => {
             try {
-                await ctx.answerCbQuery('Sveryavane...');
+                await ctx.answerCbQuery('Сверяване...');
                 await ctx.reply(
-                    `💰 **PREXVERLYANE KYM KEEPER PORTFEIL**\n\n` +
-                    `Prichodite sa svurzani s tvoia portfeil:\n\`${KEEPER_WALLET}\``,
+                    `💰 **ПРЕХВЪРЛЯНЕ КЪМ KEEPER ПОРТФЕЙЛ**\n\n` +
+                    `Приходите са свързани с твоя портфейл:\n\`${KEEPER_WALLET}\``,
                     { parse_mode: 'Markdown' }
                 );
             } catch (e) {}
@@ -101,18 +103,33 @@ TOKENS.forEach((token, index) => {
         bot.on('successful_payment', async (ctx) => {
             try {
                 const payment = ctx.message.successful_payment;
-                await ctx.reply(`🎉 Uspeshna pokupka na ${payment.total_amount} Telegram Stars! Sredstvata sa svurzani s Keeper portfeila.`);
+                await ctx.reply(`🎉 Успешна покупка на ${payment.total_amount} Telegram Stars! Средствата са свързани с Keeper портфейла.`);
             } catch (e) {}
         });
 
         bot.launch().then(() => {
-            console.log(`Full Bot #${index + 1} launched successfully.`);
-        }).catch(err => {
-            console.error(`Bot #${index + 1} launch failed:`, err.message);
-        });
+            console.log(`24/7 Bot #${index + 1} launched successfully.`);
+        }).catch(err => {});
 
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "ALL BOTS ONLINE & FULL STORE ACTIVE", keeperWallet: KEEPER_WALLET }));
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// 2. Express сървър с вграден самопинг (Keep-Alive) за 24/7 активност
+app.get('/', (req, res) => res.json({ status: "ALL BOTS 24/7 ONLINE & STORE ACTIVE", keeperWallet: KEEPER_WALLET }));
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    
+    // Самопинг механизъм на всеки 4 минути, за да не заспива сървърът в Railway/Render
+    setInterval(() => {
+        const appUrl = process.env.RENDER_EXTERNAL_URL || process.env.RAILWAY_STATIC_URL;
+        if (appUrl) {
+            const targetUrl = appUrl.startsWith('http') ? appUrl : `https://${appUrl}`;
+            https.get(targetUrl, (res) => {
+                console.log(`Keep-alive ping status: ${res.statusCode}`);
+            }).on('error', (err) => {
+                // Игнорираме мрежови грешки при пинга
+            });
+        }
+    }, 4 * 60 * 1000);
+});
