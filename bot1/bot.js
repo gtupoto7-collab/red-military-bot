@@ -16,7 +16,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
-// GMAIL SMTP CONFIGURATION (До 500 имейла на денонощие за безплатни пощи)
+// GMAIL SMTP CONFIGURATION
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -41,35 +41,39 @@ async function sendSingleEmail(toEmail, subject, textContent) {
     }
 }
 
-// Умен диспетчер: изпраща по 30 имейла в пакет с интервал, до достигане на 500 дневен лимит
+// 🧠 УМЕН ДИСПЕТЧЕР: 10 пратки по 50 имейла (общо 500 на денонощие) за майстори и фирми без сайт
 async function runSmartEmailCampaign(recipientsList, subject, message) {
-    let batchSize = 30;
+    let batchSize = 50; // по 50 бройки в пакет
     let totalSent = 0;
     
-    console.log(`Starting smart campaign for ${recipientsList.length} recipients...`);
+    console.log(`Starting campaign for ${recipientsList.length} recipients (10 batches of 50)...`);
 
     for (let i = 0; i < recipientsList.length; i += batchSize) {
         if (totalSent >= 500) {
-            console.log("Днелният лимит от 500 имейла е достигнат.");
+            console.log("Дневният лимит от 500 имейла е достигнат.");
             break;
         }
 
         const batch = recipientsList.slice(i, i + batchSize);
+        console.log(`Processing batch of ${batch.length} emails...`);
+
         for (const email of batch) {
             if (totalSent >= 500) break;
             await sendSingleEmail(email, subject, message);
             totalSent++;
-            await new Promise(resolve => setTimeout(resolve, 3000)); // пауза между имейлите
+            await new Promise(resolve => setTimeout(resolve, 4000)); // пауза между съобщенията
         }
 
+        console.log(`Batch sent. Total sent so far: ${totalSent}. Waiting for next batch interval...`);
+
         if (i + batchSize < recipientsList.length && totalSent < 500) {
-            // Пауза между пакетите
-            await new Promise(resolve => setTimeout(resolve, 90 * 60 * 1000));
+            // Пауза между пакетите (например 2 часа и 24 минути пауза между всяка от 10-те пратки)
+            await new Promise(resolve => setTimeout(resolve, 144 * 60 * 1000));
         }
     }
 }
 
-// 1. СТАРТИРАНЕ НА БОТОВЕТЕ С КОНСОЛАТА И ОФЕРТАТА ЗА БЪЛГАРИЯ
+// 1. СТАРТИРАНЕ НА БОТОВЕТЕ С КОНСОЛАТА И ОФЕРТАТА
 TOKENS.forEach((token, index) => {
     if (!token || token.length < 20) return;
     
@@ -82,11 +86,7 @@ TOKENS.forEach((token, index) => {
                 
                 const storeText = `🔥 **OFFICIAL RED SOFTWARE TEAM | България изисква висша класа!** 🔥\n\n` +
                     `Здравей, **${userName}**!\n` +
-                    `Ефтино, работи вечно безплатно и е от висша класа! RED SOFTWARE TEAM покрива всичко.\n\n` +
-                    `🌐 **Безсмъртни сайтове за 50 € & AI Системи**\n` +
-                    `• 7 дни напълно безплатен тест\n` +
-                    `• Плащаш 50 евро след теста през EasyPay\n` +
-                    `• Вечен сървър без прекъсване\n\n` +
+                    `Безсмъртни сайтове за малки фирми и майстори в България за 50 € с 7 дни напълно безплатен тест и плащане през EasyPay!\n\n` +
                     `⭐ Конзола за реално плащане и пазаруване с Telegram Stars.\n` +
                     `💎 Наличен бюджет: 3,100 Stars\n` +
                     `💼 Keeper Wallet: \`${KEEPER_WALLET}\``;
@@ -174,23 +174,23 @@ TOKENS.forEach((token, index) => {
     } catch (e) {}
 });
 
-// 2. API ЗА СТАРТИРАНЕ НА ИМЕЙЛ КАМПАНИЯ НА ПАКЕТИ ПО 30 (ДО 500/ДЕН)
+// 2. API ЗА СТАРТИРАНЕ НА ИМЕЙЛ КАМПАНИЯ (10 ПРАТКИ ПО 50 = 500)
 app.post('/api/start-campaign', async (req, res) => {
     const { recipients, subject, message } = req.body;
     if (!recipients || !Array.isArray(recipients) || !message) {
         return res.status(400).json({ error: "Missing 'recipients' array or 'message'." });
     }
-    res.json({ status: "CAMPAIGN STARTED", totalRecipients: recipients.length, note: "Smart queue running: 30 emails per batch up to 500 daily limit." });
-    runSmartEmailCampaign(recipients, subject || "OFFICIAL RED SOFTWARE TEAM", message);
+    res.json({ status: "CAMPAIGN STARTED", totalRecipients: recipients.length, note: "Smart queue running: 10 batches of 50 emails up to 500 daily limit." });
+    runSmartEmailCampaign(recipients, subject || "🌐 Безсмъртен сайт за вашата дейност с 7 дни безплатен тест | RED SOFTWARE TEAM", message);
 });
 
 // 3. EXPRESS СЪРВЪР С КЕЕП-АЛИЙВ ПИНГ ЗА 24/7 АКТИВНОСТ
-app.get('/', (req, res) => res.json({ status: "FULL 24/7 NETWORK, STARS CONSOLE & SMART GMAIL DISPATCHER ONLINE", keeperWallet: KEEPER_WALLET }));
+app.get('/', (req, res) => res.json({ status: "FULL 24/7 NETWORK, STARS CONSOLE & 10x50 GMAIL DISPATCHER ONLINE", keeperWallet: KEEPER_WALLET }));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     
-    // Самопинг на всеки 4 минути за поддържане на 24/7 активност в облака
+    // Самопинг на всеки 4 минути за 24/7 режим в облака
     setInterval(() => {
         const appUrl = process.env.RENDER_EXTERNAL_URL || process.env.RAILWAY_STATIC_URL;
         if (appUrl) {
