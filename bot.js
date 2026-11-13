@@ -37,15 +37,15 @@ const adCaption = `🔥 **OFFICIAL RED SOFTWARE TEAM | Софтуер, AI мод
     `• 7 дни напълно безплатен тест\n` +
     `• Плащаш 50 евро след теста през **EasyPay**\n` +
     `• Вечен сървър, който работи за винаги без прекъсване!\n\n` +
-    `👉 **ПЛАТФОРМА 1:** https://red-software-dashbord.onrender.com\n` +
-    `👉 **ПЛАТФОРМА 2:** https://redsoftwareteam-oficial.onrender.com\n` +
-    `📢 **КАНАЛ:** @REDSOFTWARETEAMBG\n` +
-    `📞 **VIBER:** 0879 813 928`;
+    `👉 **ПЛАТФОРМА 1 (Dashboard):** https://red-software-dashbord.onrender.com\n` +
+    `👉 **ПЛАТФОРМА 2 (Oficial):** https://redsoftwareteam-oficial.onrender.com\n` +
+    `📢 **ОФИЦИАЛЕН КАНАЛ:** @REDSOFTWARETEAMBG\n` +
+    `📞 **ТЕЛЕФОН / VIBER:** 0879 813 928`;
 
 const inlineMenu = Markup.inlineKeyboard([
     [Markup.button.url('🔥 Портфолио (Panel 1)', 'https://red-software-dashbord.onrender.com')],
     [Markup.button.url('💎 Официален Сайт (Panel 2)', 'https://redsoftwareteam-oficial.onrender.com')],
-    [Markup.button.callback('🖼️ Отвори 55 Portfolio Cnimki', 'open_portfolio_55')],
+    [Markup.button.callback('🖼️ Отвори 55 Portfolio Snimki', 'open_portfolio_55')],
     [Markup.button.callback('📊 Реален Отчет (Stats)', 'live_stats')]
 ]);
 
@@ -75,9 +75,28 @@ bot.action('open_portfolio_55', async (ctx) => {
     }
 });
 
+// Avtomatichen otgovor pri prateno photo ot potrebitel
+bot.on('photo', async (ctx) => {
+    try {
+        await ctx.reply(
+            `🔥 **OFFICIAL RED SOFTWARE TEAM**\n\n` +
+            `Кадърът е получен и регистриран в системата!\n\n` +
+            `🌐 **Разгледай платформи и портфолио:**\n` +
+            `• Panel 1: https://red-software-dashbord.onrender.com\n` +
+            `• Panel 2: https://redsoftwareteam-oficial.onrender.com`,
+            {
+                parse_mode: 'Markdown',
+                ...inlineMenu
+            }
+        );
+    } catch (err) {
+        console.error('Greshka pri photo handler:', err.message);
+    }
+});
+
 // Masova sistema obhozhdashta 16,500 grupi
 async function startMassiveGlobalAdvertising() {
-    console.log(`[BG] 🚀 Masovata sistema s 55 portfolio snimki e aktivirana za ${allTargets.length} celii!`);
+    console.log(`[BG] 🚀 Masovata sistema s 55 portfolio snimki i vsiçki ekstri e aktivirana za ${allTargets.length} celii!`);
 
     let index = 0;
     setInterval(async () => {
@@ -111,20 +130,20 @@ bot.action('live_stats', async (ctx) => {
     await ctx.answerCbQuery();
     const uptimeMinutes = Math.floor((new Date() - stats.startTime) / 60000);
     
-    const reportText = `📊 **OFFICIAL RED SOFTWARE // BOT REPORT**\n\n` +
+    const reportText = `📊 **OFFICIAL RED SOFTWARE // ULTIMATE REPORT**\n\n` +
         `🇧🇬 **BG Grupi (Celii):** ${stats.bulgariaGroupsReached} / ${bgGroups.length}\n` +
         `🌍 **Globalni Grupi (Celii):** ${stats.globalGroupsReached} / ${globalGroups.length}\n` +
         `🚀 **Obshto izprateni reklami:** ${stats.totalSentGroups}\n` +
         `🛡️ **Zashtiti / Skip-nati:** ${stats.spamProtectionsTriggered}\n` +
         `⏱️ **Vreme na rabota:** ${uptimeMinutes} min\n` +
-        `💻 **Status:** AKTIVEN 24/7 🚀`;
+        `💻 **Status:** 24/7 ULTIMATE ACTIVE 🚀`;
 
     await ctx.reply(reportText, inlineMenu);
 });
 
 app.get('/', (req, res) => {
     res.json({ 
-        status: "BOT RUNNING 24/7", 
+        status: "ULTIMATE BOT RUNNING 24/7", 
         portfolioPhotosCount: portfolioAlbum55.length,
         totalBgGroups: bgGroups.length,
         totalGlobalGroups: globalGroups.length,
@@ -137,7 +156,7 @@ app.listen(PORT, () => {
 });
 
 bot.launch().then(() => {
-    console.log('[TELEGRAM BOT] Botat s 55 portfolio snimki e startiran uspešno!');
+    console.log('[TELEGRAM BOT] Ultimate bot e startiran uspešno s vsiçki ekstri!');
     startMassiveGlobalAdvertising();
 });
 
