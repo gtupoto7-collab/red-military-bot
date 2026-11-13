@@ -1,6 +1,5 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
-const { allTargets } = require('./groups');
 
 const TOKENS = [
     process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', 
@@ -16,7 +15,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 let systemStats = {
-    totalSentAds: 0,
     activeBotsCount: TOKENS.length,
     activeStarsBudget: 3100,
     startTime: new Date()
@@ -24,22 +22,22 @@ let systemStats = {
 
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
-const adCaption = `🔥 **OFFICIAL RED SOFTWARE TEAM | REDSOFTWARE_BOT Ads** 🔥\n\n` +
-    `⭐ **Reclamna Kampaniya (Budjet: 3100 Stars):**\n` +
-    `Tezi 3100 zvezdi se harchat aktivno za masovo promovirane vuv vsi4ki grupi i kanali!\n\n` +
-    `🌐 **Besmürtni saitove za 50 € & AI Sistemi**\n` +
-    `• 7 dni napulno bezplaten test\n` +
-    `• Plashtash 50 evro sled testa prez **EasyPay**\n` +
+const adCaption = `🔥 **OFFICIAL RED SOFTWARE TEAM | Bot Network Active** 🔥\n\n` +
+    `⭐ **Рекламна Кампания (Бюджет: 3100 Stars в Telegram Ads):**\n` +
+    `Активно промотиране на главния бот @red_software_bot!\n\n` +
+    `🌐 **Безсмъртни сайтове за 50 € & AI Системи**\n` +
+    `• 7 дни напълно безплатен тест\n` +
+    `• Плащаш 50 евро след теста през **EasyPay**\n` +
     `• Вечен сървър без прекъсване!\n\n` +
-    `👉 **PLATFORMA 1:** https://red-software-dashbord.onrender.com\n` +
-    `👉 **PLATFORMA 2:** https://redsoftwareteam-oficial.onrender.com\n` +
-    `📢 **TVOJATA GRUPA:** https://t.me/+HTJNMe-pUeEzNmY0\n` +
+    `👉 **ПЛАТФОРМА 1:** https://red-software-dashbord.onrender.com\n` +
+    `👉 **ПЛАТФОРМА 2:** https://redsoftwareteam-oficial.onrender.com\n` +
+    `📢 **ТВОЯТА ГРУПА:** https://t.me/+HTJNMe-pUeEzNmY0\n` +
     `📞 **VIBER:** 0879 813 928`;
 
 const inlineMenu = Markup.inlineKeyboard([
-    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')],
-    [Markup.button.url('👥 Vlez v grupata', 'https://t.me/+HTJNMe-pUeEzNmY0')],
-    [Markup.button.callback('📊 Reklumen Otchet (3100 Stars)', 'ads_stats')]
+    [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')],
+    [Markup.button.url('👥 Влез в групата', 'https://t.me/+HTJNMe-pUeEzNmY0')],
+    [Markup.button.callback('📊 Статус', 'live_stats')]
 ]);
 
 TOKENS.forEach((token, index) => {
@@ -49,44 +47,22 @@ TOKENS.forEach((token, index) => {
         bot.start(async (ctx) => {
             try {
                 await ctx.replyWithPhoto(mainCoverImage, {
-                    caption: `🤖 [REDSOFTWARE_BOT AD-MANAGER #${index + 1} ACTIVE]\n\n` + adCaption,
+                    caption: `🤖 [REDSOFTWARE BOT #${index + 1} ONLINE]\n\n` + adCaption,
                     parse_mode: 'Markdown',
                     ...inlineMenu
                 });
             } catch (err) {}
         });
 
-        bot.action('ads_stats', async (ctx) => {
+        bot.action('live_stats', async (ctx) => {
             await ctx.answerCbQuery();
             const uptime = Math.floor((new Date() - systemStats.startTime) / 60000);
-            await ctx.reply(`📊 **REKLAMEN STATUT (Bot #${index + 1})**\n\n⭐ Izpolzvan budjet: ${systemStats.activeStarsBudget} Stars\n🚀 Izprateni reklami: ${systemStats.totalSentAds}\n⏱️ Uptime: ${uptime} min`, inlineMenu);
+            await ctx.reply(`📊 **SYSTEM REPORT (Bot #${index + 1})**\n\n⭐ Рекламен бюджет: ${systemStats.activeStarsBudget} Stars\n⏱️ Uptime: ${uptime} min`, inlineMenu);
         });
 
         bot.launch();
     } catch (e) {}
 });
 
-async function startMasterNetworkSpam() {
-    let groupIndex = 0;
-    setInterval(async () => {
-        if (!allTargets || allTargets.length === 0) return;
-        if (groupIndex >= allTargets.length) groupIndex = 0;
-        const targetGroup = allTargets[groupIndex];
-        groupIndex++;
-
-        const activeToken = TOKENS[0];
-        const senderBot = new Telegraf(activeToken);
-
-        try {
-            await senderBot.telegram.sendPhoto(targetGroup, mainCoverImage, {
-                caption: adCaption,
-                parse_mode: 'Markdown',
-                ...inlineMenu
-            });
-            systemStats.totalSentAds++;
-        } catch (err) {}
-    }, 60 * 1000);
-}
-
-app.get('/', (req, res) => res.json({ status: "REDSOFTWARE_BOT ADS ACTIVE", stats: systemStats }));
-app.listen(PORT, () => startMasterNetworkSpam());
+app.get('/', (req, res) => res.json({ status: "BOTS 24/7 ONLINE", stats: systemStats }));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
