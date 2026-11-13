@@ -18,7 +18,17 @@ let stats = {
     startTime: new Date()
 };
 
-const portfolioImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
+const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
+
+// Generirane na masiv ot 55 portfolio snimki za galeriyata
+const portfolioAlbum55 = [];
+for (let i = 1; i <= 55; i++) {
+    portfolioAlbum55.push({
+        type: 'photo',
+        media: `https://picsum.photos/seed/redsoftware${i}/800/600`,
+        caption: i === 1 ? `🔥 **OFFICIAL RED SOFTWARE TEAM // 55 PORTFOLIO SNAPSHOTS** 🔥\n\nPylna galeriya ot izgotveni sistemi, bot fermi, kodove i bezsmürtni sajtove!` : undefined
+    });
+}
 
 const adCaption = `🔥 **OFFICIAL RED SOFTWARE TEAM | Софтуер, AI модели, Bot ферми и Безсмъртни Сайтове** 🔥\n\n` +
     `🌐 **Безсмъртни сайтове за 50 € & AI Системи**\n` +
@@ -27,21 +37,21 @@ const adCaption = `🔥 **OFFICIAL RED SOFTWARE TEAM | Софтуер, AI мод
     `• 7 дни напълно безплатен тест\n` +
     `• Плащаш 50 евро след теста през **EasyPay**\n` +
     `• Вечен сървър, който работи за винаги без прекъсване!\n\n` +
-    `👉 **ПЛАТФОРМА 1 (Dashboard):** https://red-software-dashbord.onrender.com\n` +
-    `👉 **ПЛАТФОРМА 2 (Oficial):** https://redsoftwareteam-oficial.onrender.com\n` +
-    `📢 **ОФИЦИАЛЕН КАНАЛ:** @REDSOFTWARETEAMBG\n` +
-    `📞 **ТЕЛЕФОН / VIBER:** 0879 813 928`;
+    `👉 **ПЛАТФОРМА 1:** https://red-software-dashbord.onrender.com\n` +
+    `👉 **ПЛАТФОРМА 2:** https://redsoftwareteam-oficial.onrender.com\n` +
+    `📢 **КАНАЛ:** @REDSOFTWARETEAMBG\n` +
+    `📞 **VIBER:** 0879 813 928`;
 
 const inlineMenu = Markup.inlineKeyboard([
     [Markup.button.url('🔥 Портфолио (Panel 1)', 'https://red-software-dashbord.onrender.com')],
     [Markup.button.url('💎 Официален Сайт (Panel 2)', 'https://redsoftwareteam-oficial.onrender.com')],
-    [Markup.button.url('📢 @REDSOFTWARETEAMBG', 'https://t.me/REDSOFTWARETEAMBG')],
+    [Markup.button.callback('🖼️ Отвори 55 Portfolio Cnimki', 'open_portfolio_55')],
     [Markup.button.callback('📊 Реален Отчет (Stats)', 'live_stats')]
 ]);
 
 bot.start(async (ctx) => {
     try {
-        await ctx.replyWithPhoto(portfolioImage, {
+        await ctx.replyWithPhoto(mainCoverImage, {
             caption: adCaption,
             parse_mode: 'Markdown',
             ...inlineMenu
@@ -51,8 +61,23 @@ bot.start(async (ctx) => {
     }
 });
 
+// Funkciya za izprashtane na 55-te snimki kato portfolio albym (v grupi po 10)
+bot.action('open_portfolio_55', async (ctx) => {
+    await ctx.answerCbQuery('Зареждане на 55 портфолио снимки...');
+    try {
+        for (let i = 0; i < portfolioAlbum55.length; i += 10) {
+            const chunk = portfolioAlbum55.slice(i, i + 10);
+            await ctx.replyWithMediaGroup(chunk);
+        }
+    } catch (err) {
+        console.error('Greshka pri portfolio albym:', err.message);
+        await ctx.reply('⚠️ Всички 55 снимки са налични в уеб портфолиото на: https://redsoftwareteam-oficial.onrender.com');
+    }
+});
+
+// Masova sistema obhozhdashta 16,500 grupi
 async function startMassiveGlobalAdvertising() {
-    console.log(`[BG] 🚀 Masovata sistema e aktivirana za ${allTargets.length} celii!`);
+    console.log(`[BG] 🚀 Masovata sistema s 55 portfolio snimki e aktivirana za ${allTargets.length} celii!`);
 
     let index = 0;
     setInterval(async () => {
@@ -64,7 +89,7 @@ async function startMassiveGlobalAdvertising() {
         index++;
 
         try {
-            await bot.telegram.sendPhoto(group, portfolioImage, {
+            await bot.telegram.sendPhoto(group, mainCoverImage, {
                 caption: adCaption,
                 parse_mode: 'Markdown',
                 ...inlineMenu
@@ -100,6 +125,7 @@ bot.action('live_stats', async (ctx) => {
 app.get('/', (req, res) => {
     res.json({ 
         status: "BOT RUNNING 24/7", 
+        portfolioPhotosCount: portfolioAlbum55.length,
         totalBgGroups: bgGroups.length,
         totalGlobalGroups: globalGroups.length,
         stats: stats 
@@ -111,7 +137,7 @@ app.listen(PORT, () => {
 });
 
 bot.launch().then(() => {
-    console.log('[TELEGRAM BOT] Botat e startiran s dvata linca i oficialniya link!');
+    console.log('[TELEGRAM BOT] Botat s 55 portfolio snimki e startiran uspešno!');
     startMassiveGlobalAdvertising();
 });
 
