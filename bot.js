@@ -48,7 +48,7 @@ app.listen(PORT, () => {
     console.log(`[✔] Web server running on port ${PORT}`);
 });
 
-// Стартиране на ботовете с проверка за валидни токени
+// Стартиране на ботовете с гъвкава проверка, така че грешка в токен да не спира сървъра
 TOKENS.forEach((token, index) => {
     if (!token || token.includes('YOUR_')) return;
     try {
@@ -58,20 +58,12 @@ TOKENS.forEach((token, index) => {
             ctx.reply('🔥 Добре дошъл в официалната система на RED SOFTWARE TEAM!\n\n🌐 Безсмъртни сайтове за 50 € с вечен хостинг и 7 дни безплатен тест.\n📞 Viber / Tel: 0879 813 928');
         });
 
-        bot.launch();
-        console.log(`[✔] Бот #${index + 1} стартиран успешно в 24/7 режим!`);
+        bot.launch().catch(err => {
+            console.log(`[!] Забележка за Бот #${index + 1}: ${err.message}`);
+        });
+        
+        console.log(`[✔] Бот #${index + 1} инициализиран успешно!`);
     } catch (err) {
         console.error(`[✖] Грешка при стартиране на бот #${index + 1}:`, err.message);
     }
-});
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-    res.send('RED SOFTWARE TEAM - Server & Keep-Alive Active 24/7/365');
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
