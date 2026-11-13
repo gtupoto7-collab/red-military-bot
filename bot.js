@@ -16,15 +16,13 @@ let stats = {
     startTime: new Date()
 };
 
-// Снимка за портфолио
 const portfolioImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
 const targetGroups = [
     '@red_software_bot', // Основен тестов чат
 ];
 
-// 🚀 ОФИЦИАЛЕН НАЧАЛЕН И РЕКЛАМЕН ТЕКСТ НА КИРИЛИЦА
-const adCaption = `🔥 **RED SOFTWARE TEAM // ULTIMATE PROFESSIONAL PLATFORM** 🔥\n\n` +
+const adCaption = `🔥 **RED SOFTWARE TEAM | Софтуер, AI модели, Bot ферми и Безсмъртни Сайтове** 🔥\n\n` +
     `🌐 **Безсмъртни сайтове за 50 € & AI Системи**\n` +
     `Получаваш уебсайт, QR код и линк, който ще работи завинаги на Render сървъри. Пълна синхронизация в облака между лаптоп, телефон и Opera GX 24/7/365!\n\n` +
     `💡 **УСЛОВИЯ ЗА БЪЛГАРИЯ:**\n` +
@@ -40,7 +38,6 @@ const inlineMenu = Markup.inlineKeyboard([
     [Markup.button.callback('📊 Реален Отчет (Stats)', 'live_stats')]
 ]);
 
-// Начален екран при /start
 bot.start(async (ctx) => {
     try {
         await ctx.replyWithPhoto(portfolioImage, {
@@ -53,9 +50,8 @@ bot.start(async (ctx) => {
     }
 });
 
-// Автоматична рекламна система 24/7
 async function startAutoAdvertising() {
-    console.log('[BG] 🚀 Автоматичната рекламна система с новия текст е активна!');
+    console.log('[BG] 🚀 Автоматичната рекламна система с пълния брендинг е активна!');
 
     setInterval(async () => {
         for (const group of targetGroups) {
@@ -102,7 +98,7 @@ app.listen(PORT, () => {
 });
 
 bot.launch().then(() => {
-    console.log('[TELEGRAM BOT] Стартиран успешно с новия начален текст!');
+    console.log('[TELEGRAM BOT] Стартиран успешно!');
     startAutoAdvertising();
 });
 
