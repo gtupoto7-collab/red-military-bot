@@ -22,13 +22,13 @@ TOKENS.forEach((token, index) => {
 
         bot.start(async (ctx) => {
             try {
-                const userName = ctx.from.first_name || 'Приятел';
+                const userName = ctx.from.first_name || 'Priyatel';
                 
-                const storeText = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
-                    `Здравей, **${userName}**!\n` +
-                    `Избери пакет звезди за плащане. Ако нямаш налични звезди в акаунта си, можеш да ги закупиш от официалния магазин:\n\n` +
-                    `💎 Наличен бюджет: 3,100 Stars\n` +
-                    `💼 Keeper Wallet: \`${KEEPER_WALLET}\``;
+                const storeText = `⭐ **OFFICIAL RED SOFTWARE TEAM | Full Stars Store & Network** ⭐\n\n` +
+                    `Zdravei, **${userName}**!\n` +
+                    `Izberi paket zvezdi za reallno plashtane i zaredvane. Ako nqmash nalichni zvezdi, kupi ot oficialniya magazin:\n\n` +
+                    `💎 Nalichen budzhet: 3,100 Stars\n` +
+                    `💼 Keeper Wallet (za izplashtane): \`${KEEPER_WALLET}\``;
 
                 const storeKeyboard = Markup.inlineKeyboard([
                     [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
@@ -38,8 +38,9 @@ TOKENS.forEach((token, index) => {
                     [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
                     [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50050')],
                     [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-                    [Markup.button.url('💳 Купи истински звезди (Магазин)', 'https://t.me/premium')],
-                    [Markup.button.callback('💰 Прехвърли към Keeper (Реални пари)', 'withdraw_keeper')]
+                    [Markup.button.url('💳 Kupi istinski zvezdi (Magazin)', 'https://t.me/premium')],
+                    [Markup.button.callback('💰 Prexvorli kam Keeper (Realni pari)', 'withdraw_keeper')],
+                    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
                 ]);
 
                 await ctx.reply(storeText, {
@@ -65,17 +66,17 @@ TOKENS.forEach((token, index) => {
 
                 try {
                     await ctx.replyWithInvoice({
-                        title: `Пакет ${count} Telegram Stars`,
-                        description: `Закупуване на ${count} звезди за мрежата и Keeper портфейла.`,
+                        title: `Paket ${count} Telegram Stars`,
+                        description: `Zakupuvane na ${count} zvezdi za mrezhata i Keeper portfeila.`,
                         payload: `store_${count}_${Date.now()}`,
                         currency: 'XTR',
                         prices: [{ label: `${count} Stars`, amount: count }]
                     });
                 } catch (e) {
                     await ctx.reply(
-                        `⭐ **ПАКЕТ: ${count} Telegram Stars**\n\n` +
-                        `Балансът в акаунта е нула. За да купиш истински звезди, използвай официалния магазин: https://t.me/premium\n\n` +
-                        `Или превеждай директно към Keeper портфейла:\n\`${KEEPER_WALLET}\``,
+                        `⭐ **PAKET: ${count} Telegram Stars**\n\n` +
+                        `Balansyt v aкауnta e nula. Za da kupish istinski zvezdi, izpolzvai oficialniya magazin: https://t.me/premium\n\n` +
+                        `Ili prevejdai direktno kam Keeper portfeila:\n\`${KEEPER_WALLET}\``,
                         { parse_mode: 'Markdown' }
                     );
                 }
@@ -84,10 +85,10 @@ TOKENS.forEach((token, index) => {
 
         bot.action('withdraw_keeper', async (ctx) => {
             try {
-                await ctx.answerCbQuery('Сверяване...');
+                await ctx.answerCbQuery('Sveryavane...');
                 await ctx.reply(
-                    `💰 **ПРЕХВЪРЛЯНЕ КЪМ KEEPER ПОРТФЕЙЛ**\n\n` +
-                    `Приходите са свързани с твоя портфейл:\n\`${KEEPER_WALLET}\``,
+                    `💰 **PREXVERLYANE KYM KEEPER PORTFEIL**\n\n` +
+                    `Prichodite sa svurzani s tvoia portfeil:\n\`${KEEPER_WALLET}\``,
                     { parse_mode: 'Markdown' }
                 );
             } catch (e) {}
@@ -100,20 +101,18 @@ TOKENS.forEach((token, index) => {
         bot.on('successful_payment', async (ctx) => {
             try {
                 const payment = ctx.message.successful_payment;
-                await ctx.reply(`🎉 Успешна покупка на ${payment.total_amount} Telegram Stars! Средствата са свързани с Keeper портфейла.`);
+                await ctx.reply(`🎉 Uspeshna pokupka na ${payment.total_amount} Telegram Stars! Sredstvata sa svurzani s Keeper portfeila.`);
             } catch (e) {}
         });
 
         bot.launch().then(() => {
-            console.log(`Bot #${index + 1} launched successfully.`);
+            console.log(`Full Bot #${index + 1} launched successfully.`);
         }).catch(err => {
             console.error(`Bot #${index + 1} launch failed:`, err.message);
         });
 
-    } catch (e) {
-        console.error(`Error setting up bot #${index + 1}:`, e.message);
-    }
+    } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "BOTS ONLINE & STORE ACTIVE" }));
+app.get('/', (req, res) => res.json({ status: "ALL BOTS ONLINE & FULL STORE ACTIVE", keeperWallet: KEEPER_WALLET }));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
