@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "main": "bot.js",
   "scripts": {
+    "install": "npm install --omit=dev",
     "start": "node bot.js"
   },
   "dependencies": {
     "dotenv": "^18.0.10",
     "express": "^4.22.3",
+    "nodemailer": "^6.9.13",
     "telegraf": "^4.16.3"
   },
   "keywords": [],
