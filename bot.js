@@ -14,8 +14,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
-const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
-
 TOKENS.forEach((token, index) => {
     try {
         const bot = new Telegraf(token);
@@ -23,10 +21,10 @@ TOKENS.forEach((token, index) => {
         bot.start(async (ctx) => {
             const userName = ctx.from.first_name || 'Приятел';
             
-            const storeCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
+            const storeText = `🛒 **OFFICIAL RED SOFTWARE TEAM | Магазин за Звезди** 🛒\n\n` +
                 `Здравей, **${userName}**!\n` +
-                `Избери пакет звезди за плащане и пазаруване:\n\n` +
-                `💎 Наличен бюджет: 3,100 Stars\n` +
+                `Избери пакет Telegram Stars за покупка или плащане:\n\n` +
+                `💎 Бюджет: 3,100 Stars\n` +
                 `💼 Keeper Wallet: \`${KEEPER_WALLET}\``;
 
             const storeKeyboard = Markup.inlineKeyboard([
@@ -37,23 +35,14 @@ TOKENS.forEach((token, index) => {
                 [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
                 [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50050')],
                 [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-                [Markup.button.url('💳 Зареди Stars в Telegram', 'https://t.me/premium')],
+                [Markup.button.url('💳 Зареди Stars (Telegram Magazin)', 'https://t.me/premium')],
                 [Markup.button.callback('💰 Прехвърли към Keeper', 'withdraw_keeper')]
             ]);
 
-            try {
-                await ctx.replyWithPhoto(mainCoverImage, {
-                    caption: storeCaption,
-                    parse_mode: 'Markdown',
-                    ...storeKeyboard
-                });
-            } catch (err) {
-                // Ако снимката не се зареди, праща само текста с бутоните
-                await ctx.reply(storeCaption, {
-                    parse_mode: 'Markdown',
-                    ...storeKeyboard
-                });
-            }
+            await ctx.reply(storeText, {
+                parse_mode: 'Markdown',
+                ...storeKeyboard
+            });
         });
 
         const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50050', 'buy_150000'];
@@ -72,7 +61,7 @@ TOKENS.forEach((token, index) => {
             try {
                 await ctx.replyWithInvoice({
                     title: `Пакет ${count} Telegram Stars`,
-                    description: `Закупуване на ${count} звезди през менюто за пазаруване.`,
+                    description: `Покупка на ${count} звезди през магазина.`,
                     payload: `store_${count}_${Date.now()}`,
                     currency: 'XTR',
                     prices: [{ label: `${count} Stars`, amount: count }]
@@ -80,8 +69,8 @@ TOKENS.forEach((token, index) => {
             } catch (e) {
                 await ctx.reply(
                     `⭐ **ПАКЕТ: ${count} Telegram Stars**\n\n` +
-                    `Закупи звезди от тук: https://t.me/premium\n` +
-                    `Или преведи сумата към твоя Keeper портфейл:\n\`${KEEPER_WALLET}\``,
+                    `Закупи от тук: https://t.me/premium\n` +
+                    `Или преведи сумата към Keeper портфейла ти:\n\`${KEEPER_WALLET}\``,
                     { parse_mode: 'Markdown' }
                 );
             }
@@ -91,7 +80,7 @@ TOKENS.forEach((token, index) => {
             await ctx.answerCbQuery('Сверяване...');
             await ctx.reply(
                 `💰 **ПРЕХВЪРЛЯНЕ КЪМ KEEPER ПОРТФЕЙЛ**\n\n` +
-                `Средствата са насочени към портфейла ти:\n\`${KEEPER_WALLET}\``,
+                `Сумите са насочени към портфейла ти:\n\`${KEEPER_WALLET}\``,
                 { parse_mode: 'Markdown' }
             );
         });
