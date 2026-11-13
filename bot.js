@@ -1,3 +1,4 @@
+cat << 'EOF' > bot.js
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 const { allTargets } = require('./groups');
