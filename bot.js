@@ -64,3 +64,14 @@ TOKENS.forEach((token, index) => {
         console.error(`[✖] Грешка при стартиране на бот #${index + 1}:`, err.message);
     }
 });
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get('/', (req, res) => {
+    res.send('RED SOFTWARE TEAM - Server & Keep-Alive Active 24/7/365');
+});
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
