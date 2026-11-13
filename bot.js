@@ -48,7 +48,7 @@ app.listen(PORT, () => {
     console.log(`[✔] Web server running on port ${PORT}`);
 });
 
-// Стартиране на ботовете с гъвкава проверка, така че грешка в токен да не спира сървъра
+// Стартиране на ботовете с пълна защита, за да не спират сървъра при невалиден токен
 TOKENS.forEach((token, index) => {
     if (!token || token.includes('YOUR_')) return;
     try {
@@ -66,15 +66,4 @@ TOKENS.forEach((token, index) => {
     } catch (err) {
         console.error(`[✖] Грешка при стартиране на бот #${index + 1}:`, err.message);
     }
-});
-const express = require('express');
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.get('/', (req, res) => {
-    res.send('RED SOFTWARE TEAM - Server & Web Keep-Alive Active 24/7/365');
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
 });
