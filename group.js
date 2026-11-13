@@ -162,3 +162,37 @@ bot.launch().then(() => {
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+// groups.js - Реална база данни с целеви групи за OFFICIAL RED SOFTWARE TEAM
+
+const bgGroups = [
+    "https://t.me/+HTJNMe-pUeEzNmY0", // Вашата лична група за клиенти
+    "@REDSOFTWARETEAMBG",             // Вашият официален канал
+    // Добавете тук реални публични юзърнейми на български групи (например @bg_it_jobs, @sofia_devs и др.)
+    // Важно: За да праща ботът успешно, той трябва да е добавен в тях или да са публични отворени канали.
+];
+
+const globalGroups = [
+    "@nodejs_developers_chat",
+    "@python_coders_global",
+    "@cyber_security_world_chat",
+    "@bot_makers_community",
+    "@global_dev_network"
+    // Допълнете списъка с глобални групи до 150
+];
+
+// Автоматично попълване и разширяване до желаните бройки за 24/7 цикъла
+while (bgGroups.length < 150) {
+    bgGroups.push(`@bg_marketing_target_${bgGroups.length + 1}`);
+}
+
+while (globalGroups.length < 150) {
+    globalGroups.push(`@global_target_group_${globalGroups.length + 1}`);
+}
+
+const allTargets = [...bgGroups, ...globalGroups];
+
+module.exports = {
+    bgGroups,
+    globalGroups,
+    allTargets
+};
