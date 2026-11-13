@@ -3,7 +3,7 @@ const express = require('express');
 
 const TOKENS = [
     process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', 
-    process.env.BOT_TOKEN_2 || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw', 
+    process.env.BOT_TOKEN_2 || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw', // @Vickyoria_a_bot
     process.env.BOT_TOKEN_3 || '9197706596:AAHzaNKwUwhaCGU6B_P-eZ7x2PiVfIoEtCI', 
     process.env.BOT_TOKEN_4 || '9094556865:AAFXZcwuMjH_pfyQK9_KTDEOuW5h_wUtWW0', 
     process.env.BOT_TOKEN_5 || '9053522895:AAHDuv6qkUGQ7g7gvH88QjMwVR4msnWsnhY'  
@@ -24,9 +24,9 @@ TOKENS.forEach((token, index) => {
             try {
                 const userName = ctx.from.first_name || 'Priyatel';
                 
-                const storeText = `⭐ **OFFICIAL RED SOFTWARE TEAM | Full Stars Store & Network** ⭐\n\n` +
+                const storeText = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
                     `Zdravei, **${userName}**!\n` +
-                    `Izberi paket zvezdi za reallno plashtane i zaredvane. Ako nqmash nalichni zvezdi, kupi ot oficialniya magazin:\n\n` +
+                    `Tova e konsolata za reallno plashtane i pazaruvane sys Telegram Stars.\n\n` +
                     `💎 Nalichen budzhet: 3,100 Stars\n` +
                     `💼 Keeper Wallet (za izplashtane): \`${KEEPER_WALLET}\``;
 
@@ -38,9 +38,8 @@ TOKENS.forEach((token, index) => {
                     [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
                     [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50050')],
                     [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-                    [Markup.button.url('💳 Kupi istinski zvezdi (Magazin)', 'https://t.me/premium')],
-                    [Markup.button.callback('💰 Prexvorli kam Keeper (Realni pari)', 'withdraw_keeper')],
-                    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
+                    [Markup.button.url('💳 Kupi istinski zvezdi (Oficialen magazin)', 'https://t.me/premium')],
+                    [Markup.button.callback('💰 Prexvorli kam Keeper (Realni pari)', 'withdraw_keeper')]
                 ]);
 
                 await ctx.reply(storeText, {
@@ -67,15 +66,15 @@ TOKENS.forEach((token, index) => {
                 try {
                     await ctx.replyWithInvoice({
                         title: `Paket ${count} Telegram Stars`,
-                        description: `Zakupuvane na ${count} zvezdi za mrezhata i Keeper portfeila.`,
+                        description: `Zakupuvane na ${count} zvezdi za konsolata i Keeper portfeila.`,
                         payload: `store_${count}_${Date.now()}`,
                         currency: 'XTR',
                         prices: [{ label: `${count} Stars`, amount: count }]
                     });
                 } catch (e) {
                     await ctx.reply(
-                        `⭐ **PAKET: ${count} Telegram Stars**\n\n` +
-                        `Balansyt v aкауnta e nula. Za da kupish istinski zvezdi, izpolzvai oficialniya magazin: https://t.me/premium\n\n` +
+                        `⭐ **KONSOLA ZA PLASHTANE: ${count} Telegram Stars**\n\n` +
+                        `Balansyt e nula. Kupish istinski zvezdi ot oficialniya magazin: https://t.me/premium\n\n` +
                         `Ili prevejdai direktno kam Keeper portfeila:\n\`${KEEPER_WALLET}\``,
                         { parse_mode: 'Markdown' }
                     );
@@ -106,13 +105,11 @@ TOKENS.forEach((token, index) => {
         });
 
         bot.launch().then(() => {
-            console.log(`Full Bot #${index + 1} launched successfully.`);
-        }).catch(err => {
-            console.error(`Bot #${index + 1} launch failed:`, err.message);
-        });
+            console.log(`Bot #${index + 1} online with payment console.`);
+        }).catch(err => {});
 
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "ALL BOTS ONLINE & FULL STORE ACTIVE", keeperWallet: KEEPER_WALLET }));
+app.get('/', (req, res) => res.json({ status: "ALL BOTS ONLINE WITH PAYMENT CONSOLE", keeperWallet: KEEPER_WALLET }));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
