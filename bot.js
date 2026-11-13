@@ -1,6 +1,7 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 const https = require('https');
+const nodemailer = require('nodemailer');
 
 const TOKENS = [
     process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', 
@@ -15,7 +16,32 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
-// 1. Стартиране на всички ботове с пълното меню за плащане и конзола
+// GMAIL SMTP CONFIGURATION (До 500 имейла/ден за безплатни пощи)
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER || 'gtupoto7@gmail.com',
+        pass: process.env.GMAIL_PASS || ''
+    }
+});
+
+async function sendAutoEmail(toEmail, subject, textContent) {
+    try {
+        const info = await transporter.sendMail({
+            from: `"OFFICIAL RED SOFTWARE TEAM" <${process.env.GMAIL_USER || 'gtupoto7@gmail.com'}>`,
+            to: toEmail,
+            subject: subject,
+            text: textContent
+        });
+        console.log("Email sent successfully: " + info.response);
+        return true;
+    } catch (error) {
+        console.error("Email dispatch error: ", error);
+        return false;
+    }
+}
+
+// 1. СТАРТИРАНЕ НА БОТОВЕТЕ С ПЪЛНАТА КОНСОЛА И ОФЕРТАТА
 TOKENS.forEach((token, index) => {
     if (!token || token.length < 20) return;
     
@@ -26,11 +52,16 @@ TOKENS.forEach((token, index) => {
             try {
                 const userName = ctx.from.first_name || 'Приятел';
                 
-                const storeText = `⭐ **OFFICIAL RED SOFTWARE TEAM | 24/7 Stars Store & Network** ⭐\n\n` +
+                const storeText = `🔥 **OFFICIAL RED SOFTWARE TEAM | България изисква висша класа!** 🔥\n\n` +
                     `Здравей, **${userName}**!\n` +
-                    `Активна е конзолата за реално плащане и пазаруване с Telegram Stars.\n\n` +
+                    `Ефтино, работи вечно безплатно и е от висша класа! RED SOFTWARE TEAM покрива всичко.\n\n` +
+                    `🌐 **Безсмъртни сайтове за 50 € & AI Системи**\n` +
+                    `• 7 дни напълно безплатен тест\n` +
+                    `• Плащаш 50 евро след теста през EasyPay\n` +
+                    `• Вечен сървър без прекъсване\n\n` +
+                    `⭐ Конзола за реално плащане и пазаруване с Telegram Stars.\n` +
                     `💎 Наличен бюджет: 3,100 Stars\n` +
-                    `💼 Keeper Wallet (за изплащане): \`${KEEPER_WALLET}\``;
+                    `💼 Keeper Wallet: \`${KEEPER_WALLET}\``;
 
                 const storeKeyboard = Markup.inlineKeyboard([
                     [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
@@ -42,7 +73,8 @@ TOKENS.forEach((token, index) => {
                     [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
                     [Markup.button.url('💳 Купи истински звезди (Магазин)', 'https://t.me/premium')],
                     [Markup.button.callback('💰 Прехвърли към Keeper (Реални пари)', 'withdraw_keeper')],
-                    [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')]
+                    [Markup.button.url('🔥 Портфолио & Табло', 'https://red-software-dashbord.onrender.com')],
+                    [Markup.button.url('🌐 Официален Портал', 'https://redsoftwareteam-oficial.onrender.com')]
                 ]);
 
                 await ctx.reply(storeText, {
@@ -108,28 +140,38 @@ TOKENS.forEach((token, index) => {
         });
 
         bot.launch().then(() => {
-            console.log(`24/7 Bot #${index + 1} launched successfully.`);
+            console.log(`24/7 Bot #${index + 1} online.`);
         }).catch(err => {});
 
     } catch (e) {}
 });
 
-// 2. Express сървър с вграден самопинг (Keep-Alive) за 24/7 активност
-app.get('/', (req, res) => res.json({ status: "ALL BOTS 24/7 ONLINE & STORE ACTIVE", keeperWallet: KEEPER_WALLET }));
+// 2. GMAIL SPAM / DISPATCHER API ENDPOINT
+app.post('/api/send-email', async (req, res) => {
+    const { to, subject, message } = req.body;
+    if (!to || !message) {
+        return res.status(400).json({ error: "Missing 'to' or 'message' fields." });
+    }
+    const success = await sendAutoEmail(to, subject || "OFFICIAL RED SOFTWARE TEAM", message);
+    if (success) {
+        res.json({ status: "SUCCESS", sentTo: to });
+    } else {
+        res.status(500).json({ status: "FAILED", error: "Check server logs." });
+    }
+});
+
+// 3. EXPRESS СЪРВЪР С КЕЕП-АЛИЙВ ПИНГ ЗА 24/7 АКТИВНОСТ
+app.get('/', (req, res) => res.json({ status: "FULL 24/7 NETWORK, STARS CONSOLE & GMAIL DISPATCHER ONLINE", keeperWallet: KEEPER_WALLET }));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     
-    // Самопинг механизъм на всеки 4 минути, за да не заспива сървърът в Railway/Render
+    // Самопинг на всеки 4 минути за 24/7 изпълнение
     setInterval(() => {
         const appUrl = process.env.RENDER_EXTERNAL_URL || process.env.RAILWAY_STATIC_URL;
         if (appUrl) {
             const targetUrl = appUrl.startsWith('http') ? appUrl : `https://${appUrl}`;
-            https.get(targetUrl, (res) => {
-                console.log(`Keep-alive ping status: ${res.statusCode}`);
-            }).on('error', (err) => {
-                // Игнорираме мрежови грешки при пинга
-            });
+            https.get(targetUrl, (res) => {}).on('error', (err) => {});
         }
     }, 4 * 60 * 1000);
 });
