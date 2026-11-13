@@ -9,13 +9,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Spisuk s celite (grupi i kanali)
+// Promenliva za zapazvane na ID-to na poslednata kachena ot teb snimka
+let lastUploadedPhotoId = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800'; // rezervna snimka
+
 const targetGroups = [
     '@red_software_bot', // Osnoven techat
     // Tuk dobavete oshte grupi, v koito botut ima prava da pishe
 ];
 
-// REKLAMEN TEKST S PORTFOLIO I VSIChKI LINKOVE
 const adCaption = `🔥 **RED SOFTWARE TEAM // ULTIMATE PROFESSIONAL PLATFORM** 🔥\n\n` +
     `💻 **IZRABOTKA NA BEZSMURTNI SAJTOVE I SOFTUER ZA 50 EUR**\n` +
     `🌐 Poluchavash gotov uebsajt + QR kod + vechen hosting v oblaka na Render!\n\n` +
@@ -29,41 +30,45 @@ const adCaption = `🔥 **RED SOFTWARE TEAM // ULTIMATE PROFESSIONAL PLATFORM** 
     `💬 **TELEGRAM BOT:** @red_software_bot\n` +
     `📞 **VIBER / TELEFON ZA VRUZKA:** 0879 813 928`;
 
-const portfolioImageURL = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800'; 
+// 📸 SLUSHATEL: Kogato pratish snimka na bota v chata, toi ya zapazva avtomatichno!
+bot.on('photo', async (ctx) => {
+    const photos = ctx.message.photo;
+    // Vzima nai-visokata resolyucia na snimkata
+    const largestPhoto = photos[photos.length - 1];
+    lastUploadedPhotoId = largestPhoto.file_id;
+    
+    await ctx.reply('✅ Snimkata ot portfolio e zasetena i zapazena vuv pametta na bota! Shte se izprashta v sledvashtite reklami.');
+});
 
-async function startPortfolioAdvertising() {
-    console.log('[BG] 📸 Reklamnata sistema sus snimki i portfolio e aktivirana 24/7!');
+// Avtomatichno prastane 24/7 s tvoiata poslevadna snimka
+async function startDynamicAdvertising() {
+    console.log('[BG] 📸 Dinamichnata reklamna sistema sas sobstveni snimki e aktivirana!');
 
     setInterval(async () => {
-        console.log(`[BG] 🚀 Izprashtane na portfolio do ${targetGroups.length} grupi...`);
+        console.log(`[BG] 🚀 Izprashtane na portfolio do ${targetGroups.length} групи...`);
         
         for (const group of targetGroups) {
             try {
-                await bot.telegram.sendPhoto(group, portfolioImageURL, {
+                await bot.telegram.sendPhoto(group, lastUploadedPhotoId, {
                     caption: adCaption,
                     parse_mode: 'Markdown'
                 });
-                console.log(`[✅ USPEH] Portfolio snimkata e izpratena do: ${group}`);
+                console.log(`[✅ USPEH] Snimkata e izpratena do: ${group}`);
                 
                 await new Promise(resolve => setTimeout(resolve, 30000));
             } catch (err) {
                 console.error(`[❌ GRESHKA] Neuspya da prati snimka do ${group}:`, err.message);
             }
         }
-        console.log('[BG] 💤 Cikalut zavurshi. sledvashtoto prastane sled 1 chas.');
     }, 60 * 60 * 1000);
 }
 
 bot.start((ctx) => {
-    ctx.reply('🛡️ Dobre doshli vuv oficialniya centar na RED SOFTWARE TEAM!\n\nRazgledajte portfolio platformata: https://red-software-dashbord.onrender.com');
-});
-
-bot.command('status', (ctx) => {
-    ctx.reply(`✅ Portfolio botut raboti v oblaka. Celevi grupi: ${targetGroups.length}`);
+    ctx.reply('🛡️ Prati mi snimka tuk v chata (portfolio, skrinshot na sajt, QR kod), i az shte ya izpolzvam za 24/7 reklamite v mrejata!');
 });
 
 app.get('/', (req, res) => {
-    res.send('RED SOFTWARE PORTFOLIO AD BOT IS RUNNING 🚀');
+    res.send('RED SOFTWARE DYNAMIC PHOTO BOT IS RUNNING 🚀');
 });
 
 app.listen(PORT, () => {
@@ -72,7 +77,7 @@ app.listen(PORT, () => {
 
 bot.launch().then(() => {
     console.log('[TELEGRAM BOT] Startiran uspeshno!');
-    startPortfolioAdvertising();
+    startDynamicAdvertising();
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
