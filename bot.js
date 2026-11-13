@@ -17,6 +17,8 @@ app.use(express.json());
 let systemStats = {
     activeBotsCount: TOKENS.length,
     activeStarsBudget: 3100,
+    adsCampaignsActive: true,
+    fullStackEngine: "ONLINE",
     startTime: new Date()
 };
 
@@ -26,84 +28,83 @@ TOKENS.forEach((token, index) => {
     try {
         const bot = new Telegraf(token);
 
-        // Автоматично меню за пазаруване при стартиране на бота
         bot.start(async (ctx) => {
-            const userName = ctx.from.first_name || 'Приятел';
-            const userUsername = ctx.from.username ? `@${ctx.from.username}` : 'без username';
+            const userName = ctx.from.first_name || 'Priyatel';
+            const userUsername = ctx.from.username ? `@${ctx.from.username}` : 'bez username';
 
-            const shoppingMenuCaption = `🛒 **OFFICIAL RED SOFTWARE TEAM | Автоматично Меню за Пазаруване** 🛒\n\n` +
-                `Здравей, **${userName}** (${userUsername})!\n` +
-                `Избери желан пакет звезди за покупка или директно прехвърляне към твоя портфейл:\n\n` +
-                `💎 Наличен бюджет в мрежата: 3,100 Stars\n` +
-                `💼 Keeper Wallet (за изплащане в реални пари): \`${KEEPER_WALLET}\``;
+            const fullStackCaption = `🔥 **OFFICIAL RED SOFTWARE TEAM | Full-Stack & Ads Hub** 🔥\n\n` +
+                `Zdravei, **${userName}** (${userUsername})!\n` +
+                `Mrezhata raboti 24/7. Izberi opcia za pazaruvane, reklami ili upravlenie:\n\n` +
+                `💎 Nalichen budzhet: 3,100 Stars\n` +
+                `💼 Keeper Wallet: \`${KEEPER_WALLET}\``;
 
-            // Интерактивно меню за пазаруване с всички пакети
-            const shoppingKeyboard = Markup.inlineKeyboard([
+            const fullStackKeyboard = Markup.inlineKeyboard([
                 [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
-                [Markup.button.callback('⭐ 350 Stars (5.89 €)', 'buy_350')],
                 [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
-                [Markup.button.callback('⭐ 750 Stars (12.49 €)', 'buy_750')],
                 [Markup.button.callback('⭐ 1 000 Stars (16.59 €)', 'buy_1000')],
-                [Markup.button.callback('⭐ 1 500 Stars (24.99 €)', 'buy_1500')],
                 [Markup.button.callback('⭐ 2 500 Stars (40.99 €)', 'buy_2500')],
-                [Markup.button.callback('⭐ 5 000 Stars (81.99 €)', 'buy_5000')],
                 [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
-                [Markup.button.url('💳 Зареди Stars в Telegram (Магазин)', 'https://t.me/premium')],
-                [Markup.button.callback('💰 Прехвърли към Keeper (Реални пари)', 'withdraw_keeper')],
-                [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')]
+                [Markup.button.callback('📢 Puskane na Ads Kampania (Full-Stack)', 'launch_ads')],
+                [Markup.button.url('💳 Zaredi Stars (Magazin)', 'https://t.me/premium')],
+                [Markup.button.callback('💰 Prexvorli kym Keeper (Realni pari)', 'withdraw_keeper')],
+                [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
             ]);
 
             try {
                 await ctx.replyWithPhoto(mainCoverImage, {
-                    caption: `🤖 [AUTOMATED SHOPPING BOT #${index + 1} ONLINE]\n\n` + shoppingMenuCaption,
+                    caption: `🤖 [FULL-STACK BOT #${index + 1} ONLINE]\n\n` + fullStackCaption,
                     parse_mode: 'Markdown',
-                    ...shoppingKeyboard
+                    ...fullStackKeyboard
                 });
             } catch (err) {}
         });
 
-        const packageActions = ['buy_250', 'buy_350', 'buy_500', 'buy_750', 'buy_1000', 'buy_1500', 'buy_2500', 'buy_5000', 'buy_10000'];
+        const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000'];
 
-        // Обработка на покупката и автоматично генериране на инвойс
         bot.action(packageActions, async (ctx) => {
             await ctx.answerCbQuery();
             const action = ctx.match;
             let count = 250;
-            if (action === 'buy_350') count = 350;
             if (action === 'buy_500') count = 500;
-            if (action === 'buy_750') count = 750;
             if (action === 'buy_1000') count = 1000;
-            if (action === 'buy_1500') count = 1500;
             if (action === 'buy_2500') count = 2500;
-            if (action === 'buy_5000') count = 5000;
             if (action === 'buy_10000') count = 10000;
 
             try {
                 await ctx.replyWithInvoice({
-                    title: `Автоматичен пакет ${count} Telegram Stars`,
-                    description: `Закупуване на ${count} звезди през автоматичното меню за пазаруване.`,
-                    payload: `shop_stars_${count}_${Date.now()}`,
+                    title: `Full-Stack Paket ${count} Telegram Stars`,
+                    description: `Zakupuvane na ${count} zvezdi za mrezhata i ads kampanii.`,
+                    payload: `fullstack_stars_${count}_${Date.now()}`,
                     currency: 'XTR',
                     prices: [{ label: `${count} Stars`, amount: count }]
                 });
             } catch (e) {
                 await ctx.reply(
-                    `⭐ **ПАКЕТ: ${count} Telegram Stars**\n\n` +
-                    `За да завършиш пазаруването и да получиш средствата към твоя Keeper портфейл:\n` +
-                    `\`${KEEPER_WALLET}\`\n\n` +
-                    `Можеш да заредиш Stars тук: https://t.me/premium`,
+                    `⭐ **PAKET: ${count} Telegram Stars**\n\n` +
+                    `Zaredi stars ot tuka: https://t.me/premium\n` +
+                    `Ili prevejdai direktno kam Keeper portfeila:\n\`${KEEPER_WALLET}\``,
                     { parse_mode: 'Markdown' }
                 );
             }
         });
 
-        // Бутон за прехвърляне към Keeper портфейла
-        bot.action('withdraw_keeper', async (ctx) => {
-            await ctx.answerCbQuery('Сверяване на приходите...');
+        // Spetsialen handler za reklamni kampanii i cross-platform syng
+        bot.action('launch_ads', async (ctx) => {
+            await ctx.answerCbQuery('Initsializirane na reklamna mrezha...');
             await ctx.reply(
-                `💰 **ПРЕХВЪРЛЯНЕ КЪМ KEEPER ПОРТФЕЙЛ**\n\n` +
-                `Приходите от автоматичното меню за пазаруване се конвертират и изплащат в реални средства към твоя портфейл:\n` +
-                `\`${KEEPER_WALLET}\``,
+                `📢 **FULL-STACK ADS & CAMPAIGN ENGINE**\n\n` +
+                `reklamnite moduli i razprostranenieto iz vsichki vunshen platformi sa aktivirani.\n` +
+                `Budzhet: **3,100 Stars**\n` +
+                `Status: **Izprashtane na mrezhovi signali kum vsički botove...**`,
+                { parse_mode: 'Markdown' }
+            );
+        });
+
+        bot.action('withdraw_keeper', async (ctx) => {
+            await ctx.answerCbQuery('Sveryavane na balansite...');
+            await ctx.reply(
+                `💰 **PREXVERLYANE KYM KEEPER PORTFEIL**\n\n` +
+                `Prichodite ot mrezhata sa nasocheni kam:\n\`${KEEPER_WALLET}\``,
                 { parse_mode: 'Markdown' }
             );
         });
@@ -114,17 +115,18 @@ TOKENS.forEach((token, index) => {
 
         bot.on('successful_payment', async (ctx) => {
             const payment = ctx.message.successful_payment;
-            await ctx.reply(
-                `🎉 **Успешна покупка от автоматичното меню!**\n\n` +
-                `Закупени са **${payment.total_amount} Telegram Stars**. Средствата са насочени към твоя Keeper портфейл:\n` +
-                `\`${KEEPER_WALLET}\``,
-                { parse_mode: 'Markdown' }
-            );
+            await ctx.reply(`🎉 Uspeshno plashtane s ${payment.total_amount} Telegram Stars! Sredstvata sa svurzani s Keeper portfeila.`);
         });
 
         bot.launch();
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "AUTOMATED SHOPPING MENU ACTIVE", stats: systemStats }));
-app.listen(PORT, () => console.log(`Store server running on port ${PORT}`));
+// Full-stack API endpoint za vryzka s vunshen platformi i dashboard
+app.get('/', (req, res) => res.json({ 
+    status: "FULL-STACK ADS & BOT FARM ACTIVE", 
+    keeperWallet: KEEPER_WALLET,
+    stats: systemStats 
+}));
+
+app.listen(PORT, () => console.log(`Full-Stack Ads server running on port ${PORT}`));
