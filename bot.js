@@ -16,37 +16,34 @@ let stats = {
     startTime: new Date()
 };
 
-// Списък с файлови ID-та или линкове към вашите портфолио снимки
-const portfolioImages = [
-    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800',
-    // Тук могат да се добавят още снимки от вашата галерия
-];
+// Снимка за портфолио
+const portfolioImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
 const targetGroups = [
     '@red_software_bot', // Основен тестов чат
 ];
 
-// ОПИСАНИЕ НА КИРИЛИЦА ЗА 50 ЕВРО И БЕЗСМЪРТНИТЕ САЙТОВЕ
+// 🚀 ОФИЦИАЛЕН НАЧАЛЕН И РЕКЛАМЕН ТЕКСТ НА КИРИЛИЦА
 const adCaption = `🔥 **RED SOFTWARE TEAM // ULTIMATE PROFESSIONAL PLATFORM** 🔥\n\n` +
-    `💻 **50 ЕВРО И ВЕДНАГА СТАВАШ СОБСТВЕНИК НА WEBSITE!**\n` +
-    `🛡️ Получаваш **7 дни напълно безплатен тест** и плащаш едва тогава през **EasyPay** за безсмъртен сървър, който ще работи за винаги 24/7 в облака!\n\n` +
-    `🤖 **АКТИВНИ УСЛУГИ НА TOP CENI:**\n` +
-    `• Изработка на сайтове + QR код\n` +
-    `• Автоматизирани бот ферми и маркетингови системи\n` +
-    `• AI модели и софтуер по поръчка\n\n` +
-    `👉 **ПЛАТФОРМА:** https://red-software-dashbord.onrender.com\n` +
-    `📞 **VIBER / ТЕЛЕФОН:** 0879 813 928`;
+    `🌐 **Безсмъртни сайтове за 50 € & AI Системи**\n` +
+    `Получаваш уебсайт, QR код и линк, който ще работи завинаги на Render сървъри. Пълна синхронизация в облака между лаптоп, телефон и Opera GX 24/7/365!\n\n` +
+    `💡 **УСЛОВИЯ ЗА БЪЛГАРИЯ:**\n` +
+    `• 7 дни напълно безплатен тест\n` +
+    `• Плащаш 50 евро след теста през **EasyPay**\n` +
+    `• Вечен сървър, който работи за винаги без прекъсване!\n\n` +
+    `🛠️ **Зглоби своя сайт или система**\n` +
+    `📞 **Обади се:** 0879 813 928`;
 
 const inlineMenu = Markup.inlineKeyboard([
-    [Markup.button.url('🌐 Отвори Платформата (Render)', 'https://red-software-dashbord.onrender.com')],
+    [Markup.button.url('🔥 Отвори Портфолио (Marketplace)', 'https://red-software-dashbord.onrender.com')],
     [Markup.button.url('💻 GitHub Репозитори', 'https://github.com/gtupoto7-collab/red-military-bot')],
     [Markup.button.callback('📊 Реален Отчет (Stats)', 'live_stats')]
 ]);
 
-// При стартиране (/start) изпраща уводно съобщение със снимка и пълното описание
+// Начален екран при /start
 bot.start(async (ctx) => {
     try {
-        await ctx.replyWithPhoto(portfolioImages[0], {
+        await ctx.replyWithPhoto(portfolioImage, {
             caption: adCaption,
             parse_mode: 'Markdown',
             ...inlineMenu
@@ -56,14 +53,14 @@ bot.start(async (ctx) => {
     }
 });
 
-// Автоматична рекламна система 24/7 към групите
+// Автоматична рекламна система 24/7
 async function startAutoAdvertising() {
-    console.log('[BG] 🚀 Автоматичната рекламна система с портфолио е активна!');
+    console.log('[BG] 🚀 Автоматичната рекламна система с новия текст е активна!');
 
     setInterval(async () => {
         for (const group of targetGroups) {
             try {
-                await bot.telegram.sendPhoto(group, portfolioImages[0], {
+                await bot.telegram.sendPhoto(group, portfolioImage, {
                     caption: adCaption,
                     parse_mode: 'Markdown',
                     ...inlineMenu
@@ -105,7 +102,7 @@ app.listen(PORT, () => {
 });
 
 bot.launch().then(() => {
-    console.log('[TELEGRAM BOT] Стартиран успешно!');
+    console.log('[TELEGRAM BOT] Стартиран успешно с новия начален текст!');
     startAutoAdvertising();
 });
 
