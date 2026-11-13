@@ -22,15 +22,18 @@ let systemStats = {
 
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
-const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars & Store** ⭐\n\n` +
-    `Izberi paket zvezdi za kupuvane ili razgledai platformite:\n\n` +
+const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
+    `Izberi paket ot nai-malkite do nai-golemite zvezdi:\n\n` +
     `💎 **Nalichen budzhet:** 3,100 Stars\n` +
     `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
 
 const starsKeyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⭐ Kupis 100 Stars (1€)', 'buy_100')],
-    [Markup.button.callback('⭐ Kupis 500 Stars (5€)', 'buy_500')],
-    [Markup.button.callback('⭐ Kupis 3100 Stars (31€)', 'buy_3100')],
+    [Markup.button.callback('⭐ 200 Stars (Malak paket)', 'buy_200')],
+    [Markup.button.callback('⭐ 1 000 Stars (Sreden)', 'buy_1000')],
+    [Markup.button.callback('⭐ 3 100 Stars (Reklamen kampanen)', 'buy_3100')],
+    [Markup.button.callback('⭐ 10 000 Stars', 'buy_10000')],
+    [Markup.button.callback('⭐ 50 000 Stars', 'buy_50000')],
+    [Markup.button.callback('⭐ 150 000 Stars (Maksimalen)', 'buy_150000')],
     [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')],
     [Markup.button.url('👥 Vlez v grupata', 'https://t.me/+HTJNMe-pUeEzNmY0')]
 ]);
@@ -49,28 +52,31 @@ TOKENS.forEach((token, index) => {
             } catch (err) {}
         });
 
-        // Edinichni buy handlers za paketite
-        bot.action(['buy_100', 'buy_500', 'buy_3100'], async (ctx) => {
+        // Obsht handler za vsichki paketi ot 200 do 150 000 zvezdi
+        bot.action(['buy_200', 'buy_1000', 'buy_3100', 'buy_10000', 'buy_50000', 'buy_150000'], async (ctx) => {
             await ctx.answerCbQuery();
-            const starsCount = ctx.match === 'buy_100' ? 100 : ctx.match === 'buy_500' ? 500 : 3100;
-            const priceEuro = starsCount / 100;
+            const actionData = ctx.match;
+            let count = 200;
+            if (actionData === 'buy_1000') count = 1000;
+            if (actionData === 'buy_3100') count = 3100;
+            if (actionData === 'buy_10000') count = 10000;
+            if (actionData === 'buy_50000') count = 50000;
+            if (actionData === 'buy_150000') count = 150000;
 
-            // Izprashtane na Telegram Stars Invoice za plashtane
             try {
                 await ctx.replyWithInvoice({
-                    title: `Paket ${starsCount} Telegram Stars`,
-                    description: `Zakupuvane na ${starsCount} zvezdi za Oficialnata Red Software Mreza.`,
-                    payload: `stars_${starsCount}_${Date.now()}`,
-                    currency: 'XTR', // Telegram Stars valuta
-                    prices: [{ label: `${starsCount} Stars`, amount: starsCount }]
+                    title: `Paket ${count} Telegram Stars`,
+                    description: `Zakupuvane na ${count} zvezdi za Red Software Mrezata i Botove.`,
+                    payload: `stars_${count}_${Date.now()}`,
+                    currency: 'XTR',
+                    prices: [{ label: `${count} Stars`, amount: count }]
                 });
-            } catch (invoiceErr) {
-                // Alternativa ako invoice iziskva Provider Token
+            } catch (err) {
                 await ctx.reply(
-                    `⭐ **PORTFEIL ZA PLASHTANE (${starsCount} Stars - ${priceEuro}€)**\n\n` +
+                    `⭐ **PORTFEIL ZA PLASHTANE (${count} Stars)**\n\n` +
                     `Prevedete cyrcata ili plashtaneto kym Keeper Portfeila:\n` +
                     `\`${KEEPER_WALLET}\`\n\n` +
-                    `Ili platete prez EasyPay / platformite:\n` +
+                    `Ili izpolzvaite platformata:\n` +
                     `👉 https://red-software-dashbord.onrender.com`,
                     { parse_mode: 'Markdown', ...starsKeyboard }
                 );
@@ -81,5 +87,5 @@ TOKENS.forEach((token, index) => {
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "STARS STORE ACTIVE", stats: systemStats }));
-app.listen(PORT, () => console.log(`Store server running on port ${PORT}`));
+app.get('/', (req, res) => res.json({ status: "FULL STARS STORE ACTIVE", stats: systemStats }));
+app.listen(PORT, () => console.log(`Full store server running on port ${PORT}`));
