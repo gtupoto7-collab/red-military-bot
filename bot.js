@@ -23,19 +23,20 @@ let systemStats = {
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
 const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
-    `Izberi paket ot nai-malkite do nai-golemite zvezdi:\n\n` +
-    `💎 **Nalichen budzhet:** 3,100 Stars\n` +
+    `Избери точен пакет от менюто:\n\n` +
+    `💎 **Наличен бюджет:** 3,100 Stars\n` +
     `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
 
 const starsKeyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('⭐ 200 Stars (Malak paket)', 'buy_200')],
-    [Markup.button.callback('⭐ 1 000 Stars (Sreden)', 'buy_1000')],
-    [Markup.button.callback('⭐ 3 100 Stars (Reklamen kampanen)', 'buy_3100')],
-    [Markup.button.callback('⭐ 10 000 Stars', 'buy_10000')],
-    [Markup.button.callback('⭐ 50 000 Stars', 'buy_50000')],
-    [Markup.button.callback('⭐ 150 000 Stars (Maksimalen)', 'buy_150000')],
-    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')],
-    [Markup.button.url('👥 Vlez v grupata', 'https://t.me/+HTJNMe-pUeEzNmY0')]
+    [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
+    [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
+    [Markup.button.callback('⭐ 1 000 Stars (16.59 €)', 'buy_1000')],
+    [Markup.button.callback('⭐ 2 500 Stars (40.99 €)', 'buy_2500')],
+    [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
+    [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50000')],
+    [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
+    [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')],
+    [Markup.button.url('👥 Влез в групата', 'https://t.me/+HTJNMe-pUeEzNmY0')]
 ]);
 
 TOKENS.forEach((token, index) => {
@@ -52,31 +53,33 @@ TOKENS.forEach((token, index) => {
             } catch (err) {}
         });
 
-        // Obsht handler za vsichki paketi ot 200 do 150 000 zvezdi
-        bot.action(['buy_200', 'buy_1000', 'buy_3100', 'buy_10000', 'buy_50000', 'buy_150000'], async (ctx) => {
+        const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50000', 'buy_150000'];
+
+        bot.action(packageActions, async (ctx) => {
             await ctx.answerCbQuery();
-            const actionData = ctx.match;
-            let count = 200;
-            if (actionData === 'buy_1000') count = 1000;
-            if (actionData === 'buy_3100') count = 3100;
-            if (actionData === 'buy_10000') count = 10000;
-            if (actionData === 'buy_50000') count = 50000;
-            if (actionData === 'buy_150000') count = 150000;
+            const action = ctx.match;
+            let count = 250;
+            if (action === 'buy_500') count = 500;
+            if (action === 'buy_1000') count = 1000;
+            if (action === 'buy_2500') count = 2500;
+            if (action === 'buy_10000') count = 10000;
+            if (action === 'buy_50000') count = 50000;
+            if (action === 'buy_150000') count = 150000;
 
             try {
                 await ctx.replyWithInvoice({
-                    title: `Paket ${count} Telegram Stars`,
-                    description: `Zakupuvane na ${count} zvezdi za Red Software Mrezata i Botove.`,
+                    title: `Пакет ${count} Telegram Stars`,
+                    description: `Закупуване на ${count} звезди за мрежата на Red Software.`,
                     payload: `stars_${count}_${Date.now()}`,
                     currency: 'XTR',
                     prices: [{ label: `${count} Stars`, amount: count }]
                 });
             } catch (err) {
                 await ctx.reply(
-                    `⭐ **PORTFEIL ZA PLASHTANE (${count} Stars)**\n\n` +
-                    `Prevedete cyrcata ili plashtaneto kym Keeper Portfeila:\n` +
+                    `⭐ **ПОРТФЕЙЛ ЗА ПЛАЩАНЕ (${count} Stars)**\n\n` +
+                    `Направете превод към официалния Keeper портфейл:\n` +
                     `\`${KEEPER_WALLET}\`\n\n` +
-                    `Ili izpolzvaite platformata:\n` +
+                    `Или посетете платформата:\n` +
                     `👉 https://red-software-dashbord.onrender.com`,
                     { parse_mode: 'Markdown', ...starsKeyboard }
                 );
@@ -87,5 +90,5 @@ TOKENS.forEach((token, index) => {
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "FULL STARS STORE ACTIVE", stats: systemStats }));
-app.listen(PORT, () => console.log(`Full store server running on port ${PORT}`));
+app.get('/', (req, res) => res.json({ status: "ALL PACKAGES STORE ACTIVE", stats: systemStats }));
+app.listen(PORT, () => console.log(`Store server running on port ${PORT}`));
