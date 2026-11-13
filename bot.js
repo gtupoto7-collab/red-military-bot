@@ -9,77 +9,70 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// 🚀 МАСИВЕН СПИСЪК С ЦЕЛЕВИ БИЗНЕС И ТЕХНОЛОГИЧНИ ГРУПИ (България и Свят)
-// Забележка: Добавете тук потребителските имена (@username) или Chat ID на групите, в които ботът има права за писане.
+// Spisuk s celite (grupi i kanali)
 const targetGroups = [
-    '@red_software_bot', // Основен тестов чат
-    '@bulgaria_business', // Примерни бизнес групи
-    '@it_jobs_bulgaria',
-    '@freelance_bg',
-    '@web_developers_chat',
-    '@crypto_bulgaria_bg',
-    // Тук можете да добавите десетки други групи, в които ботът е добавен като администратор или участник
+    '@red_software_bot', // Osnoven techat
+    // Tuk dobavete oshte grupi, v koito botut ima prava da pishe
 ];
 
-// 🔥 БРУТАЛЕН РЕКЛАМЕН ТЕКСТ С ВСИЧКИ ЛИНКОВЕ И ПРЕДИМСТВА
-const adMessage = `🔥 **RED SOFTWARE TEAM // ULTIMATE PROFESSIONAL PLATFORM** 🔥\n\n` +
-    `💻 **ИЗРАБОТКА НА БЕЗСМЪРТНИ САЙТОВЕ И СОФТУЕР ЗА 50 €**\n` +
-    `🌐 Получаваш готов уебсайт + QR код + вечен хостинг в облака на Render!\n\n` +
-    `🤖 **АКТИВНИ УСЛУГИ НА ТОП ЦЕНИ:**\n` +
-    `• Автоматизирани бот ферми и маркетинг агенти (от 10 €)\n` +
-    `• Tor Marketplace & Onion скрити мрежи (от 70 €)\n` +
-    `• Custom AI Intelligence модели и софтуер по поръчка\n\n` +
-    `🛡️ **УНИКАЛНИТЕ УСЛОВИЯ ЗА БЪЛГАРИЯ:**\n` +
-    `Тестваш всичко напълно безплатно 7 дни и плащаш едва тогава през **EasyPay**!\n\n` +
-    `👉 **ОТВОРИ ПЛАТФОРМАТА СЕГА:** https://red-software-dashbord.onrender.com\n` +
-    `💬 **ТЕЛЕГРАМ БОТ:** @red_software_bot\n` +
-    `📞 **ВИБЕР / ТЕЛЕФОН ЗА ВРЪЗКА:** 0879 813 928`;
+// REKLAMEN TEKST S PORTFOLIO I VSIChKI LINKOVE
+const adCaption = `🔥 **RED SOFTWARE TEAM // ULTIMATE PROFESSIONAL PLATFORM** 🔥\n\n` +
+    `💻 **IZRABOTKA NA BEZSMURTNI SAJTOVE I SOFTUER ZA 50 EUR**\n` +
+    `🌐 Poluchavash gotov uebsajt + QR kod + vechen hosting v oblaka na Render!\n\n` +
+    `🤖 **AKTIVNI USLUGI NA TOP CENI:**\n` +
+    `• Avtomatizirani bot fermi i marketing agenti (ot 10 EUR)\n` +
+    `• Tor Marketplace & Onion skriti mreji (ot 70 EUR)\n` +
+    `• Custom AI Intelligence modeli i softuer po poruchka\n\n` +
+    `🛡️ **UNIKALNITE USLOVIYA ZA BULGARIA:**\n` +
+    `Testvash vsichko napulno bezplatno 7 dni i plashtash edva togava prez **EasyPay**!\n\n` +
+    `👉 **OTVORI PLATFORMATA SEGA:** https://red-software-dashbord.onrender.com\n` +
+    `💬 **TELEGRAM BOT:** @red_software_bot\n` +
+    `📞 **VIBER / TELEFON ZA VRUZKA:** 0879 813 928`;
 
-// ⚙️ ФУНКЦИЯ ЗА АВТОМАТИЧЕН SPAM/BROADCAST КЪМ ВСИЧКИ ГРУПИ 24/7
-async function startBrutalAdvertising() {
-    console.log('[BG] 🔥 Бруталната 24/7 фонова рекламна система е активирана!');
+const portfolioImageURL = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800'; 
 
-    // Пуска се на всеки 1 час (можете да го промените на колкото време искате)
+async function startPortfolioAdvertising() {
+    console.log('[BG] 📸 Reklamnata sistema sus snimki i portfolio e aktivirana 24/7!');
+
     setInterval(async () => {
-        console.log(`[BG] 🚀 Стартиране на масова кампания към ${targetGroups.length} групи...`);
+        console.log(`[BG] 🚀 Izprashtane na portfolio do ${targetGroups.length} grupi...`);
         
         for (const group of targetGroups) {
             try {
-                await bot.telegram.sendMessage(group, adMessage, { parse_mode: 'Markdown' });
-                console.log(`[✅ УСПЕХ] Рекламата е изпратена до: ${group}`);
+                await bot.telegram.sendPhoto(group, portfolioImageURL, {
+                    caption: adCaption,
+                    parse_mode: 'Markdown'
+                });
+                console.log(`[✅ USPEH] Portfolio snimkata e izpratena do: ${group}`);
                 
-                // Изчакване от 20 секунди между отделните групи, за да се пази профилът/ботът от Telegram антиспам бана
-                await new Promise(resolve => setTimeout(resolve, 20000));
+                await new Promise(resolve => setTimeout(resolve, 30000));
             } catch (err) {
-                console.error(`[❌ ГРЕШКА] Неуспешно пращане до ${group}:`, err.message);
+                console.error(`[❌ GRESHKA] Neuspya da prati snimka do ${group}:`, err.message);
             }
         }
-        console.log('[BG] 💤 Кампанията приключи. Следващото пускане е след 1 час.');
-    }, 60 * 60 * 1000); // 1 час интервал (60 мин * 60 сек * 1000 мс)
+        console.log('[BG] 💤 Cikalut zavurshi. sledvashtoto prastane sled 1 chas.');
+    }, 60 * 60 * 1000);
 }
 
-// Команди за управление
 bot.start((ctx) => {
-    ctx.reply('🛡️ Добре дошли в официалния център на RED SOFTWARE TEAM!\n\nИзползвайте линка към платформата за поръчки: https://red-software-dashbord.onrender.com');
+    ctx.reply('🛡️ Dobre doshli vuv oficialniya centar na RED SOFTWARE TEAM!\n\nRazgledajte portfolio platformata: https://red-software-dashbord.onrender.com');
 });
 
 bot.command('status', (ctx) => {
-    ctx.reply(`✅ Системата работи 24/7 в облака.\nTarget групи в списъка: ${targetGroups.length}\nСтатус: БРУТАЛЕН МАРКЕТИНГ АКТИВЕН.`);
+    ctx.reply(`✅ Portfolio botut raboti v oblaka. Celevi grupi: ${targetGroups.length}`);
 });
 
-// Keep-alive сървър за Render
 app.get('/', (req, res) => {
-    res.send('RED SOFTWARE 24/7 BRUTAL AD SYSTEM IS RUNNING 🚀');
+    res.send('RED SOFTWARE PORTFOLIO AD BOT IS RUNNING 🚀');
 });
 
 app.listen(PORT, () => {
-    console.log(`[WEB SERVER] Работи на порт ${PORT}`);
+    console.log(`[WEB SERVER] Raboti na port ${PORT}`);
 });
 
-// Стартиране на бота
 bot.launch().then(() => {
-    console.log('[TELEGRAM BOT] Стартиран и свързан с токен 9145863220!');
-    startBrutalAdvertising();
+    console.log('[TELEGRAM BOT] Startiran uspeshno!');
+    startPortfolioAdvertising();
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
